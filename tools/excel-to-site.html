@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة تحويل الإكسل ← services.js | MTN Syria</title>
+<style>
+:root {
+  --mtn-yellow:#ffcb00; --mtn-yellow-soft:#fff3bf;
+  --bg:#f4f6fb; --surface:#fff; --surface-2:#f8fafc;
+  --text:#111827; --muted:#5b6472; --border:#e5e8ef;
+  --green:#16a34a; --red:#dc2626; --amber:#b45309;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  font-family:'Cairo','Segoe UI',Tahoma,sans-serif;
+  background:var(--bg); color:var(--text); line-height:1.7;
+  padding-bottom:60px;
+}
+.container { max-width:980px; margin:0 auto; padding:0 18px; }
+header {
+  background:#000; color:#fff; padding:20px 0; margin-bottom:26px;
+  border-bottom:4px solid var(--mtn-yellow);
+}
+header .container { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+header h1 { font-size:20px; display:flex; align-items:center; gap:10px; }
+header h1 .logo { background:var(--mtn-yellow); color:#000; border-radius:8px; padding:2px 8px; font-size:14px; font-weight:800; }
+header .steps-hint { font-size:13px; color:#cbd5e1; }
+.card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:16px; padding:20px 22px; margin-bottom:18px;
+  box-shadow:0 2px 10px rgba(17,24,39,.07);
+}
+.card h2 { font-size:17px; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+.card .sub { font-size:13px; color:var(--muted); margin-bottom:14px; }
+.btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:10px 18px; border-radius:12px; font-weight:700; font-size:14px;
+  border:1px solid transparent; cursor:pointer; transition:all .2s; font-family:inherit;
+}
+.btn-primary { background:var(--mtn-yellow); color:#000; }
+.btn-primary:hover { transform:translateY(-1px); box-shadow:0 6px 16px rgba(255,203,0,.35); }
+.btn-outline { background:transparent; border-color:var(--border); color:var(--text); }
+.btn-outline:hover { border-color:var(--mtn-yellow); }
+.btn:disabled { opacity:.5; cursor:not-allowed; transform:none !important; }
+.field { margin-bottom:12px; }
+input[type=text], input[type=url] {
+  width:100%; padding:11px 14px; border:1.5px solid var(--border); border-radius:10px;
+  font-family:inherit; font-size:14px; background:var(--surface-2); color:var(--text);
+}
+input:focus { outline:none; border-color:var(--mtn-yellow); }
+.dropzone {
+  border:2px dashed #cbd5e1; border-radius:14px; padding:34px 20px; text-align:center;
+  background:var(--surface-2); cursor:pointer; transition:all .2s; margin-bottom:14px;
+}
+.dropzone.drag { border-color:var(--mtn-yellow); background:var(--mtn-yellow-soft); }
+.dropzone .big { font-size:34px; }
+.dropzone p { color:var(--muted); font-size:14px; }
+.dropzone p b { color:var(--text); }
+#fileName { font-size:13px; color:var(--green); font-weight:700; margin-top:10px; }
+.seg { display:flex; gap:8px; margin:10px 0 14px; background:var(--surface-2); border:1px solid var(--border); padding:4px; border-radius:12px; }
+.seg button { flex:1; padding:8px 10px; border:0; border-radius:9px; background:transparent; font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; color:var(--muted); }
+.seg button.active { background:var(--mtn-yellow); color:#000; }
+#builtInNote { font-size:13px; color:var(--muted); margin-bottom:8px; }
+#builtInNote.ok { color:var(--green); }
+#builtInNote.fail { color:var(--amber); }
+#report { display:none; }
+#report.show { display:block; }
+.stat-row { display:flex; gap:12px; flex-wrap:wrap; margin:12px 0; }
+.stat { flex:1; min-width:140px; background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:12px; text-align:center; }
+.stat b { display:block; font-size:22px; color:#000; }
+.stat span { font-size:12px; color:var(--muted); }
+table { width:100%; border-collapse:collapse; font-size:13px; margin-top:10px; }
+th, td { padding:8px 10px; border-bottom:1px solid var(--border); text-align:right; vertical-align:top; }
+th { background:var(--surface-2); font-size:12px; }
+tbody tr:hover { background:var(--surface-2); }
+#list { max-height:320px; overflow:auto; }
+#list li { font-size:13px; padding:6px 10px; border-right:3px solid var(--mtn-yellow); background:var(--surface-2); border-radius:6px; margin-bottom:6px; }
+#list li.warn { border-right-color:var(--amber); }
+#list li.error { border-right-color:var(--red); }
+.actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+.hidden { display:none !important; }
+#outBox {
+  width:100%; min-height:220px; font-family:Consolas,monospace; font-size:12px; direction:ltr; text-align:left;
+  background:#0d0e12; color:#d1e7dd; border:1px solid var(--border); border-radius:10px; padding:12px; margin-top:10px;
+}
+footer { text-align:center; color:var(--muted); font-size:13px; margin-top:30px; }
+a { color:inherit; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+@media (max-width:640px){ .grid2{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1><span class="logo">MTN</span> أداة تحويل الإكسل إلى بيانات الموقع</h1>
+    <div class="steps-hint">الخطوة 1: حمّل القالب ← الخطوة 2: يعبّئه الموظفون ← الخطوة 3: ارفعه هنا ← الخطوة 4: نزّل services.js</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>🧾 القالب (خطوة أولى)</h2>
+    <p class="sub">نزّل القالب ووزّعه على الموظفين ليملأوا بيانات خدماتهم الجديدة، ثم أرسله إليك (واتساب / بريد).</p>
+    <div class="grid2">
+      <button class="btn btn-primary" id="btnXlsxTemplate">⬇ تحميل قالب Excel (xlsx) احترافي</button>
+      <button class="btn btn-outline" id="btnCsvTemplate">⬇ تحميل قالب CSV (افتحه في أي برنامج جداول)</button>
+    </div>
+    <p class="sub" style="margin-top:8px;">القالب يحتوي صفّي مثال — قِسْ عليهما، ولا تغيّر صف الترويسة (السطر الأول) حتى لا تختل الأعمدة.</p>
+  </div>
+
+  <div class="card">
+    <h2>📥 ارفع التعديلات (خطوة ثالثة)</h2>
+    <p class="sub">اسحب ملف الإكسل (xlsx) أو CSV الذي أرسله الموظفون هنا، أو اختره من جهازك.</p>
+
+    <div class="dropzone" id="dropzone">
+      <div class="big">📁</div>
+      <p><b>اسحب الملف هنا</b> أو اضغط للاختيار</p>
+      <p style="font-size:12px;margin-top:6px;">يدعم: xlsx / xls / csv</p>
+    </div>
+    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" class="hidden">
+    <p id="fileName"></p>
+
+    <div class="seg" id="modeSeg">
+      <button data-mode="merge" class="active">دمج مع البيانات الحالية (الأكثر أماناً)</button>
+      <button data-mode="replace">استبدال كامل</button>
+    </div>
+    <p id="builtInNote"></p>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="btnParse" disabled>تحويل الملف</button>
+      <button class="btn btn-outline" id="btnClear">تفريغ</button>
+    </div>
+  </div>
+
+  <div class="card" id="report">
+    <h2>📊 نتيجة التحويل</h2>
+    <div class="stat-row">
+      <div class="stat"><b id="stTotal">0</b><span>إجمالي الخدمات</span></div>
+      <div class="stat"><b id="stAdded">0</b><span>خدمات جديدة</span></div>
+      <div class="stat"><b id="stUpdated">0</b><span>تعديل على موجودة</span></div>
+      <div class="stat"><b id="stCategories">0</b><span>التصنيفات</span></div>
+    </div>
+
+    <div id="list"></div>
+
+    <h2 style="margin-top:16px;">👁 معاينة سريعة</h2>
+    <table>
+      <thead><tr><th>أيقونة</th><th>العنوان (ع)</th><th>العنوان (en)</th><th>التصنيف</th><th>فيديو</th><th>خطوات</th></tr></thead>
+      <tbody id="preview"></tbody>
+    </table>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="btnDownload">⬇ تنزيل services.js (استبدله في مجلد data)</button>
+      <button class="btn btn-outline" id="btnCopy">نسخ الكود</button>
+      <button class="btn btn-outline" id="btnBackup">تنزيل نسخة احتياطية من البيانات الحالية</button>
+    </div>
+    <textarea id="outBox" class="hidden" readonly></textarea>
+  </div>
+
+  <footer>بعد التنزيل: ضع الملف مكان <code>data/services.js</code> في مشروعك وارفع على GitHub — والموقع يتحدّث فوراً.</footer>
+</div>
+
+<!-- ===== SheetJS محلياً (لا حاجة للإنترنت) ===== -->
+<script src="vendor/xlsx.full.min.js"></script>
+<!-- ===== بيانات الموقع الحالية ===== -->
+<script src="../data/services.js"></script>
+<!-- ===== الوحدة المنطقية ===== -->
+<script src="../js/spreadsheet-import.js"></script>
+
+<script>
+/* ============================================================
+   واجهة الصفحة — تستخدم SpreadsheetImport (الوحدة المشتركة)
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var SI = window.SpreadsheetImport;
+  var BUILTIN_SERVICES = (typeof SERVICES_DATA !== 'undefined') ? SERVICES_DATA : [];
+  var BUILTIN_CATEGORIES = (typeof CATEGORIES !== 'undefined') ? CATEGORIES : [];
+
+  var mode = 'merge';
+  var rawRows = null;
+  var generatedCode = '';
+  var lastResult = null;
+
+  var dropzone = document.getElementById('dropzone');
+  var fileInput = document.getElementById('fileInput');
+  var btnParse = document.getElementById('btnParse');
+  var btnClear = document.getElementById('btnClear');
+  var noteEl = document.getElementById('builtInNote');
+
+  /* ---------- الحالة ---------- */
+  function loadBuiltIn() {
+    if (BUILTIN_SERVICES.length) {
+      noteEl.textContent = '✓ تم تحميل البيانات الحالية من data/services.js : ' + BUILTIN_SERVICES.length + ' خدمة — وضع الدمج سيعمل بنجاح.';
+      noteEl.className = 'ok';
+    } else {
+      noteEl.textContent = 'تنبيه: لم يتم العثور على البيانات الحالية (افتح الأداة من موقعك أو localhost). وضع الاستبدال سيُبقي كل شيء من الإكسل فقط.';
+      noteEl.className = 'fail';
+    }
+    noteEl.style.display = 'block';
+  }
+
+  function getBuiltin() {
+    return { services: BUILTIN_SERVICES, cats: BUILTIN_CATEGORIES };
+  }
+
+  /* ---------- قراءة الملف ---------- */
+  function ingestArrayBuffer(buf, filename) {
+    var isCsv = /\.csv$/i.test(filename || '');
+    var parsed;
+    try {
+      if (typeof XLSX !== 'undefined') {
+        if (isCsv) {
+          var text = new TextDecoder('utf-8').decode(buf);
+          if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+          parsed = SI.parseCsv(text);
+        } else {
+          var wb = XLSX.read(buf, { type: 'array' });
+          var first = wb.SheetNames[0];
+          parsed = XLSX.utils.sheet_to_json(wb.Sheets[first], { header: 1, defval: '' });
+          parsed = parsed.filter(function (r) { return r.some(function (x) { return String(x).trim() !== ''; }); });
+        }
+      } else if (isCsv) {
+        var txt = new TextDecoder('utf-8').decode(buf);
+        parsed = SI.parseCsv(txt);
+      } else {
+        throw new Error('مكتبة قراءة xlsx غير متوفرة — جرّب ملف CSV');
+      }
+    } catch (e) {
+      alert('تعذر قراءة الملف: ' + e.message);
+      return null;
+    }
+    rawRows = parsed || [];
+    btnParse.disabled = false;
+    document.getElementById('fileName').textContent = 'المحدّد: ' + filename + ' — ' + rawRows.length + ' صف';
+    return rawRows;
+  }
+
+  function handleFile(file) {
+    if (!file) return;
+    if (!/\.(xlsx|xls|csv)$/i.test(file.name)) {
+      alert('الرجاء اختيار ملف بصيغة xlsx أو xls أو csv');
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function (ev) {
+      ingestArrayBuffer(ev.target.result, file.name);
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  dropzone.addEventListener('click', function () { fileInput.click(); });
+  fileInput.addEventListener('change', function () { handleFile(fileInput.files[0]); });
+  ['dragover', 'dragenter'].forEach(function (ev) {
+    dropzone.addEventListener(ev, function (e) { e.preventDefault(); dropzone.classList.add('drag'); });
+  });
+  ['dragleave', 'drop'].forEach(function (ev) {
+    dropzone.addEventListener(ev, function (e) { e.preventDefault(); dropzone.classList.remove('drag'); });
+  });
+  dropzone.addEventListener('drop', function (e) { handleFile(e.dataTransfer.files[0]); });
+
+  document.getElementById('modeSeg').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    document.querySelectorAll('#modeSeg button').forEach(function (x) { x.classList.remove('active'); });
+    b.classList.add('active');
+    mode = b.getAttribute('data-mode');
+  });
+
+  btnClear.addEventListener('click', function () {
+    fileInput.value = ''; rawRows = null; btnParse.disabled = true;
+    document.getElementById('fileName').textContent = '';
+    document.getElementById('report').classList.remove('show');
+  });
+
+  /* ---------- التحويل ---------- */
+  function processAndRender() {
+    if (!rawRows || !rawRows.length) { alert('لا توجد بيانات'); return; }
+    var result = SI.processRows(rawRows, {
+      mode: mode,
+      builtin: BUILTIN_SERVICES,
+      builtinCats: BUILTIN_CATEGORIES
+    });
+    render(result);
+    return result;
+  }
+
+  btnParse.addEventListener('click', function () {
+    processAndRender();
+    updateStatsViews();
+  });
+
+  function render(result) {
+    lastResult = result;
+    document.getElementById('stTotal').textContent = result.services.length;
+    document.getElementById('stAdded').textContent = result.added;
+    document.getElementById('stUpdated').textContent = result.updated;
+    document.getElementById('stCategories').textContent = result.categories.length;
+    document.getElementById('report').classList.add('show');
+
+    var list = document.getElementById('list');
+    list.innerHTML = '';
+    if (result.issues && result.issues.length) {
+      result.issues.forEach(function (i) {
+        var li = document.createElement('li');
+        li.className = i.level;
+        li.textContent = (i.level === 'ok' ? '✓ ' : (i.level === 'warn' ? '⚠ ' : '✗ ')) + i.text;
+        list.appendChild(li);
+      });
+    } else {
+      list.innerHTML = '<li>✓ لا توجد ملاحظات — كل شيء سليم.</li>';
+    }
+
+    var pb = document.getElementById('preview');
+    pb.innerHTML = result.services.slice(0, 25).map(function (s) {
+      function esc(x) { return String(x || '').replace(/[&<>"']/g, function (m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); }
+      return '<tr><td>' + esc(s.icon) + '</td><td>' + esc(s.title_ar) + '</td><td>' + esc(s.title_en) + '</td>' +
+        '<td>' + esc(s.category) + '</td><td>' + (s.video_url ? '✓' : '—') + '</td><td>' + s.steps_ar.length + '</td></tr>';
+    }).join('');
+
+    generatedCode = SI.generateCode(result.services, result.categories);
+    document.getElementById('outBox').value = generatedCode;
+    document.getElementById('outBox').classList.remove('hidden');
+  }
+
+  function updateStatsViews() { /* عرض إضافي عند الحاجة */ }
+
+  /* ---------- تنزيل / نسخ / نسخة احتياطية ---------- */
+  function downloadText(name, text) {
+    var blob = new Blob([text], { type: 'text/javascript;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 100);
+  }
+
+  document.getElementById('btnDownload').addEventListener('click', function () {
+    if (!generatedCode) return;
+    downloadText('services.js', generatedCode);
+  });
+
+  document.getElementById('btnCopy').addEventListener('click', function () {
+    if (!generatedCode) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(generatedCode).then(function () { alert('تم النسخ ✓'); }, function () { fallbackCopy(); });
+    } else fallbackCopy();
+  });
+  function fallbackCopy() {
+    var box = document.getElementById('outBox');
+    box.classList.remove('hidden');
+    box.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    alert(ok ? 'تم النسخ ✓' : 'انسخ الكود يدوياً (Ctrl+C) من المربع الأسود');
+  }
+
+  document.getElementById('btnBackup').addEventListener('click', function () {
+    if (!BUILTIN_SERVICES.length) { alert('لا توجد بيانات حالية للنسخ الاحتياطي'); return; }
+    downloadText('services-backup.js', SI.generateCode(BUILTIN_SERVICES, BUILTIN_CATEGORIES));
+  });
+
+  /* ---------- توليد قالب XLSX ---------- */
+  function sheetToXlsx() {
+    if (typeof XLSX === 'undefined') { alert('مكتبة الإكسل غير متوفرة على هذا الجهاز'); return; }
+    var headers = [
+      'معرّف الخدمة (id)', 'التصنيف (category)', 'الأيقونة (icon)',
+      'العنوان بالعربية', 'العنوان بالإنجليزية',
+      'الملخص بالعربية', 'الملخص بالإنجليزية',
+      'الشرح بالعربية (سطر جديد = فقرة جديدة)', 'الشرح بالإنجليزية',
+      'الخطوات بالعربية (كل خطوة بسطر)', 'الخطوات بالإنجليزية',
+      'رابط الفيديو (video_url)', 'الزمن بالعربية', 'الزمن بالإنجليزية',
+      'أيقونة التصنيف (category_icon)', 'اسم التصنيف بالعربية', 'اسم التصنيف بالإنجليزية'
+    ];
+    var example = ['new-example', 'c-mobile', '📱', 'عنوان الخدمة (مثال)', 'Service Title (example)',
+      'ملخص قصير يظهر في بطاقة الخدمة', 'Short summary shown on the card',
+      'هنا الشرح التفصيلي.\n\nسطر فارغ = فقرة جديدة.', 'Detailed description here.\n\nBlank line = new paragraph.',
+      'الخطوة الأولى\nالخطوة الثانية\nالخطوة الثالثة', 'Step one\nStep two\nStep three',
+      '', '5 دقائق', '5 minutes', '', '', ''];
+
+    var aoa = [headers, example];
+
+    // أضف التصنيفات الحالية كـ rows مرجعية في ورقة ثانية
+    var catAoa = [['معرّف التصنيف', 'الأيقونة', 'الاسم بالعربية', 'الاسم بالإنجليزية']];
+    (BUILTIN_CATEGORIES.length ? BUILTIN_CATEGORIES : [{ id: 'c-mobile', icon: '📱', title_ar: 'خطوط الجوال', title_en: 'Mobile Lines' }])
+      .forEach(function (c) { catAoa.push([c.id, c.icon, c.title_ar, c.title_en]); });
+
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.aoa_to_sheet(aoa);
+    ws['!cols'] = [
+      { wch: 16 }, { wch: 16 }, { wch: 10 }, { wch: 24 }, { wch: 24 },
+      { wch: 34 }, { wch: 34 }, { wch: 50 }, { wch: 50 },
+      { wch: 34 }, { wch: 34 }, { wch: 34 }, { wch: 12 }, { wch: 12 },
+      { wch: 20 }, { wch: 24 }, { wch: 24 }
+    ];
+    var range = XLSX.utils.decode_range(ws['!ref']);
+    for (var C = range.s.c; C <= range.e.c; C++) {
+      var addr = XLSX.utils.encode_cell({ r: 0, c: C });
+      if (ws[addr]) ws[addr].s = { fill: { fgColor: { rgb: 'FFCB00' } }, font: { bold: true, color: { rgb: '000000' } }, alignment: { wrapText: true } };
+    }
+    ws['!autofilter'] = { ref: 'A1:' + XLSX.utils.encode_range(range).split(':')[1] };
+    XLSX.utils.book_append_sheet(wb, ws, 'الخدمات');
+
+    var wsCat = XLSX.utils.aoa_to_sheet(catAoa);
+    wsCat['!cols'] = [{ wch: 24 }, { wch: 10 }, { wch: 24 }, { wch: 24 }];
+    XLSX.utils.book_append_sheet(wb, wsCat, 'التصنيفات');
+
+    var wsNote = XLSX.utils.aoa_to_sheet([
+      ['تعليمات استخدام القالب'], [''],
+      ['1 - لا تعدّل صف الترويسة (السطر الأول).'],
+      ['2 - الصف الثاني مثال — يمكنك حذفه أو التعديل عليه.'],
+      ['3 - كل خدمة في صف واحد.'],
+      ['4 - الخطوات: اكتب كل خطوة في سطر مستقل داخل نفس الخلية (Alt+Enter في إكسل).'],
+      ['5 - الشرح: سطر فارغ = يتحول إلى فقرة جديدة.'],
+      ['6 - التصنيف: اختر من ورقة «التصنيفات»، وإن كان تصنيفاً جديداً املأ الأعمدة الثلاثة الأخيرة.'],
+      ['7 - الفيديو: ضع رابط يوتيوب كامل، أو اتركه فارغاً ليرفع لاحقاً.'],
+      ['8 - بعد الملء: احفظ الملف وأرسله لمن يتولى رفعه على الموقع.']
+    ]);
+    wsNote['!cols'] = [{ wch: 90 }];
+    XLSX.utils.book_append_sheet(wb, wsNote, 'تعليمات');
+
+    XLSX.writeFile(wb, 'MTN-services-template.xlsx');
+  }
+
+  document.getElementById('btnXlsxTemplate').addEventListener('click', sheetToXlsx);
+
+  document.getElementById('btnCsvTemplate').addEventListener('click', function () {
+    var a = document.createElement('a');
+    a.href = '../template/قائمة-الخدمات.csv';
+    a.download = 'قائمة-الخدمات.csv';
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { a.remove(); }, 100);
+  });
+
+  /* ---------- إقلاع ---------- */
+  loadBuiltIn();
+
+  /* ============================================================
+     واجهة اختبار/برمجية (تُستخدم في اختبار E2E وصفحة الفورم)
+     ============================================================ */
+  window.ExcelTool = {
+    mode: function () { return mode; },
+    setMode: function (m) { mode = (m === 'replace') ? 'replace' : 'merge'; },
+    getBuiltin: getBuiltin,
+    ingestArrayBuffer: ingestArrayBuffer,
+    processAndRender: processAndRender,
+    getLastResult: function () { return lastResult; },
+    getGeneratedCode: function () { return generatedCode; },
+    downloadText: downloadText
+  };
+})();
+</script>
+</body>
+</html>

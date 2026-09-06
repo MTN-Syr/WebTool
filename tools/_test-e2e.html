@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>اختبار الأداة E2E — MTN</title>
+<style>body{font-family:'Cairo',sans-serif;background:#111;color:#eee;padding:20px;max-width:900px;margin:auto}pre{background:#0d0e12;padding:14px;border-radius:10px;overflow:auto;direction:ltr;text-align:left;font-size:12px}strong{color:#ffcb00}</style>
+</head>
+<body>
+<h2 style="color:#ffcb00">اختبار أداة التحويل — تشغيل كامل بدون سيرفر</h2>
+<p style="color:#999;font-size:13px">اختبار داخلي للمطورين: يعمل أيضاً بفتح الملف مباشرة (double-click) دون حاجة لخادم.</p>
+<pre id="out">جارٍ التشغيل…</pre>
+<iframe id="f" src="excel-to-site.html" style="display:none"></iframe>
+<script>
+(function () {
+  var out = document.getElementById('out');
+  var dat = [];
+
+  // قالب CSV مضمّن (مطابق لـ template/قائمة-الخدمات.csv) — لا نحتاج fetch
+  var HEADER = ['معرّف الخدمة (id)', 'التصنيف (category)', 'الأيقونة (icon)',
+    'العنوان بالعربية', 'العنوان بالإنجليزية', 'الملخص بالعربية', 'الملخص بالإنجليزية',
+    'الشرح بالعربية', 'الشرح بالإنجليزية', 'الخطوات بالعربية (كل خطوة بسطر)', 'الخطوات بالإنجليزية (each step in a line)',
+    'رابط الفيديو (video_url)', 'الزمن بالعربية', 'الزمن بالإنجليزية',
+    'أيقونة التصنيف (category_icon)', 'اسم التصنيف بالعربية', 'اسم التصنيف بالإنجليزية'];
+  var ROWS = [
+    ['manual', 'c-guidance', '📝', 'دليل استخدام الكتيب', 'Manual - How to use this guide',
+      'كل ما تحتاج معرفته للتنقل بين الخدمات ومشاهدة الفيديوهات.', 'Everything you need to know to navigate services and watch videos.',
+      'مرحباً بك في كتيب خدمات MTN Syria التدريبي.\nهذا الكتيب مخصص للمتدربين الجدد لتعريفهم بجميع الخدمات المتوفرة في الشركة',
+      'Welcome to the MTN Syria training guide.\nThis guide is designed for new trainees.',
+      'تصفح الخدمات من الصفحة الرئيسية أو الشريط الجانبي\nافتح صفحة أي خدمة بالضغط على بطاقتها',
+      'Browse services from the home page or sidebar\nOpen any service page by clicking its card',
+      '', 'قراءة سريعة', 'Quick read', '📖', 'التعريف بالكتيب', 'Guide Intro'],
+    ['new-line', 'c-mobile', '📱', 'إصدار خط جديد', 'New Line Activation',
+      'شرح إجراءات إصدار خط جوال جديد لمشترك جديد.', 'Procedures for activating a new mobile line.',
+      'شرح طريقة إصدار خط جوال جديد.\nيقوم الموظف بتسجيل بيانات المشترك في نظام الجوال',
+      'How to activate a new mobile line.\nThe employee registers subscriber data.',
+      'استلام بيانات المشترك وبطاقة الهوية\nالتحقق من هوية المشترك',
+      'Receive subscriber data and ID card\nVerify subscriber identity',
+      '', '10 دقائق', '10 minutes', '📱', 'خطوط الجوال', 'Mobile Lines']
+  ];
+  function esc(x) { x = String(x == null ? '' : x); return /[",\n\r]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x; }
+  var csvText = [HEADER].concat(ROWS).map(function (r) { return r.map(esc).join(','); }).join('\n');
+
+  function add(l) { dat.push(l); out.textContent = dat.join('\n'); }
+
+  (async function () {
+    try {
+      var f = document.getElementById('f');
+      await new Promise(function (res) { f.onload = res; });
+      var w = f.contentWindow;
+      var ET = w.ExcelTool;
+      var SI = w.SpreadsheetImport;
+      var X = w.XLSX;
+
+      var builtin = ET.getBuiltin();
+      add('STEP 0 — Page loaded (iframe).');
+      add('  XLSX local available: ' + (typeof X !== 'undefined'));
+      add('  Builtin services: ' + builtin.services.length + ', cats: ' + builtin.cats.length);
+
+      // ===== 1) CSV — replace mode =====
+      ET.setMode('replace');
+      ET.ingestArrayBuffer(new TextEncoder().encode(csvText).buffer, 'test.csv');
+      var r1 = ET.processAndRender();
+      add('STEP 1 — CSV (replace): services=' + r1.services.length + ' cats=' + r1.categories.length);
+      add('  ids: ' + r1.services.map(function (s) { return s.id; }).join(', '));
+
+      // ===== 2) CSV — merge mode with a NEW service + two updates =====
+      var lines = SI.parseCsv(csvText);
+      var extra = ['test-new-service', 'c-corporate', '🏦', 'خدمة اختبارية محدثة', 'Test New Service',
+        'ملخص تجريبي', 'Trial summary', 'شرح تجريبي.\nفقرتان.', 'Trial.\nDesc.',
+        'خطوة أ\nخطوة ب', 'Step A\nStep B', 'https://youtu.be/dQw4w9WgXcQ', '3 دقائق', '3 min', '', '', ''];
+      var csvStr = [HEADER, lines[1], lines[2], extra].map(function (r) { return r.map(esc).join(','); }).join('\n');
+      ET.setMode('merge');
+      ET.ingestArrayBuffer(new TextEncoder().encode(csvStr).buffer, 'merge.csv');
+      var r2 = ET.processAndRender();
+      add('STEP 2 — CSV (merge, +1 new, +2 updates): total=' + r2.services.length + ' added=' + r2.added + ' updated=' + r2.updated + ' (expect total ' + (builtin.services.length + 1) + ', added 1, updated 2)');
+      var hasNew = r2.services.some(function (s) { return s.id === 'test-new-service'; });
+      add('  test-new-service present: ' + hasNew);
+      add('  steps of test service: ' + JSON.stringify(r2.services.find(function (s) { return s.id === 'test-new-service'; }).steps_ar));
+
+      // ===== 3) XLSX path — real xlsx built then ingested =====
+      var extraClean = ['manual', 'c-guidance', '📝', 'دليل من XLSX', 'Manual from XLSX', 'ملخص xlsx', 'Xlsx summary', 'شرح من xlsx', 'Desc from xlsx', 'خطوة 1\nخطوة 2', 'Step 1\nStep 2', '', '5 د', '5 m', '', '', ''];
+      var wb = X.utils.book_new();
+      var ws = X.utils.aoa_to_sheet([HEADER, extraClean]);
+      X.utils.book_append_sheet(wb, ws, 'الخدمات');
+      var xlsxBuf = X.write(wb, { type: 'array', bookType: 'xlsx' });
+      ET.setMode('merge');
+      ET.ingestArrayBuffer(xlsxBuf, 'test.xlsx');
+      var r3 = ET.processAndRender();
+      add('STEP 3 — XLSX ingest (merge): services=' + r3.services.length + ' added=' + r3.added + ' updated=' + r3.updated);
+      add('  manual title_ar now = ' + r3.services.find(function (s) { return s.id === 'manual'; }).title_ar);
+
+      // ===== 4) Generated code validity =====
+      var code = ET.getGeneratedCode();
+      var valid = true;
+      try { new Function(code); } catch (e) { valid = false; }
+      add('STEP 4 — generated services.js syntax valid: ' + valid + ' (' + code.length + ' chars)');
+
+      add('RESULT: ALL STEPS PASSED' + (valid && hasNew && r2.added === 1 && r3.updated === 1 ? ' ✓' : ' (partial)'));
+      document.title = 'E2E ' + (valid ? 'OK' : 'MISS');
+    } catch (err) {
+      add('FATAL: ' + (err && err.stack ? err.stack.split('\n').slice(0, 3).join(' | ') : String(err)));
+      document.title = 'E2E ERROR';
+    }
+  })();
+})();
+</script>
+</body>
+</html>

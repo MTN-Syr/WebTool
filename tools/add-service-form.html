@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فورم إضافة خدمة جديدة | MTN Syria</title>
+<style>
+:root {
+  --mtn-yellow:#ffcb00; --mtn-yellow-soft:#fff3bf;
+  --bg:#f4f6fb; --surface:#fff; --surface-2:#f8fafc;
+  --text:#111827; --muted:#5b6472; --border:#e5e8ef;
+  --green:#16a34a; --red:#dc2626; --amber:#b45309;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'Cairo','Segoe UI',Tahoma,sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:60px; }
+.container { max-width: 860px; margin:0 auto; padding:0 18px; }
+header { background:#000; color:#fff; padding:20px 0; margin-bottom:24px; border-bottom:4px solid var(--mtn-yellow); }
+header .container{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
+header h1{ font-size:20px; display:flex; align-items:center; gap:10px;}
+header h1 .logo{ background:var(--mtn-yellow); color:#000; border-radius:8px; padding:2px 8px; font-size:14px; font-weight:800;}
+.card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px 22px; margin-bottom:18px; box-shadow:0 2px 10px rgba(17,24,39,.07); }
+.card h2{ font-size:17px; margin-bottom:8px; display:flex; align-items:center; gap:8px;}
+.card .sub { font-size:14px; color:var(--muted); margin-bottom:14px; }
+details { border:1px solid var(--border); border-radius:12px; padding:14px 18px; background:var(--surface-2); }
+summary { cursor:pointer; font-weight:800; font-size:15px; color:var(--text); }
+details ol { margin:12px 4px 4px 20px; padding:0; }
+details li { margin-bottom:8px; font-size:14px; }
+details li b{ color:#000; }
+.step-badge{ display:inline-block; background:var(--mtn-yellow); color:#000; font-weight:800; border-radius:50%; width:22px; height:22px; text-align:center; line-height:22px; font-size:12px; margin-left:6px;}
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 14px; }
+@media (max-width:640px){ .form-grid{grid-template-columns:1fr;} .grid2{grid-template-columns:1fr !important;} }
+.field { margin-bottom:12px; }
+.field label { display:block; font-size:13px; font-weight:700; margin-bottom:5px; }
+.field .req{ color:var(--red); }
+.field input, .field select, .field textarea {
+  width:100%; padding:10px 13px; border:1.5px solid var(--border); border-radius:10px;
+  font-family:inherit; font-size:14px; background:var(--surface-2); color:var(--text);
+}
+.field textarea { min-height:90px; resize:vertical; }
+.field .hint{ font-size:11.5px; color:var(--muted); margin-top:4px; }
+input:focus, select:focus, textarea:focus { outline:none; border-color:var(--mtn-yellow); }
+.full { grid-column:1 / -1; }
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:11px 20px; border-radius:12px; font-weight:700; font-size:15px; border:1px solid transparent; cursor:pointer; transition:all .2s; font-family:inherit; }
+.btn-primary { background:var(--mtn-yellow); color:#000; }
+.btn-primary:hover { transform:translateY(-1px); box-shadow:0 6px 16px rgba(255,203,0,.35); }
+.btn-outline { background:transparent; border-color:var(--border); color:var(--text); }
+.btn-outline:hover { border-color:var(--mtn-yellow); }
+.actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:8px; }
+#previewBox { background:var(--surface-2); border:1px dashed var(--border); border-radius:14px; padding:16px; }
+.pv-card { display:flex; gap:14px; align-items:flex-start; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+.pv-icon{ font-size:38px; }
+.pv-title{ font-size:17px; font-weight:800; }
+.pv-cat{ font-size:12px; color:var(--muted); }
+.pv-sum{ font-size:13px; color:var(--muted); margin-top:4px; }
+.pv-video{ font-size:12px; color:var(--green); margin-top:6px; }
+#result { display:none; }
+#result.show { display:block; background:var(--mnt-green-light,#eefdf2); border:1px solid var(--green); border-radius:12px; padding:14px 16px; }
+#csvOut { width:100%; min-height:120px; direction:ltr; text-align:left; font-family:Consolas,monospace; font-size:12px; background:#0d0e12; color:#d1e7dd; border:1px solid var(--border); border-radius:10px; padding:12px; }
+footer { text-align:center; color:var(--muted); font-size:13px; margin-top:30px; }
+a{ color:inherit; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1><span class="logo">MTN</span> فورم إضافة خدمة جديدة</h1>
+    <div style="font-size:13px;color:#cbd5e1">لعرض الفورم فقط — التحميل للكادر التقني</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ===== الدليل التفصيلي ===== -->
+  <div class="card">
+    <h2>📖 كيفية إضافة خدمة على الموقع (خطوة بخطوة)</h2>
+    <details open>
+      <summary>بصفتي موظفاً غير تقني — كيف أضيف خدمة؟</summary>
+      <ol>
+        <li><span class="step-badge">1</span> املأ هذا الفورم ببيانات الخدمة (الاسم، الشرح، الخطوات، رابط الفيديو).</li>
+        <li><span class="step-badge">2</span> اضغط زر <b>«توليد بيانات الخدمة»</b> في الأسفل، ثم اضغط <b>«تنزيل الخدمة (ملف CSV)»</b>.</li>
+        <li><span class="step-badge">3</span> أرسل الملف الناتج (أو انسخ الكود) إلى مسؤول الموقع عبر واتساب أو البريد.</li>
+        <li><span class="step-badge">4</span> انتهى دورك — مسؤول الموقع سيرفع التعديل على الموقع بثوانٍ.</li>
+      </ol>
+    </details>
+    <details style="margin-top:10px;" open>
+      <summary>بصفتي مسؤول الموقع — كيف أقبل الخدمة وأرفعها؟</summary>
+      <ol>
+        <li><span class="step-badge">1</span> استلم ملف الخدمة (CSV) من الموظف.</li>
+        <li><span class="step-badge">2</span> افتح صفحة <b>أداة التحويل</b> من رابط موقعك: <code>https://&lt;موقعك&gt;/tools/excel-to-site.html</code></li>
+        <li><span class="step-badge">3</span> اسحب الملف إلى الأداة ← اضغط <b>«تحويل الملف»</b> (موضع «دمج» مفعّل مسبقاً = لن تُحذف أي خدمة حالية).</li>
+        <li><span class="step-badge">4</span> راجع «نتيجة التحويل» والمعاينة، ثم اضغط <b>«تنزيل services.js»</b>.</li>
+        <li><span class="step-badge">5</span> استبدل الملف <code>data/services.js</code> في مشروعك بالمُولّد الجديد.</li>
+        <li><span class="step-badge">6</span> ارفع التغيير على GitHub (زر «Commit and push» في GitHub Desktop).</li>
+        <li><span class="step-badge">7</span> خلال أقل من دقيقة يصبح الموقع محدّثاً للجميع ✓</li>
+      </ol>
+      <p style="font-size:13px;color:var(--muted);margin-top:8px">💡 ملاحظة: إذا كانت هذه أول مرة تتسلم فيها تعديلات، حدّث أولاً نسخة من <code>data/services.js</code> كنسخة احتياطية (زر «نسخة احتياطية» داخل الأداة).</p>
+    </details>
+    <p class="sub" style="margin-top:10px">اختصار في الطريق: بدل الفورم، يمكن للموظف أن يملأ قالب الإكسل الممتلئ بالأمثلة <b>(من زر قوالب أداة التحويل)</b> — نفس النتيجة.</p>
+  </div>
+
+  <!-- ===== الفورم ===== -->
+  <div class="card">
+    <h2>✍️ بيانات الخدمة الجديدة</h2>
+    <p class="sub">الحقول المعلمة بـ <span style="color:var(--red)">*</span> إلزامية. الخطوات تُكتب كل واحدة في سطر مستقل.</p>
+
+    <div class="form-grid">
+      <div class="field full">
+        <label>الأيقونة <span class="req">*</span></label>
+        <input id="fIcon" type="text" value="📱" maxlength="4">
+        <div class="hint">اختر رمزاً تعبيرياً يمثل الخدمة، مثل 📱 💳 🌐 🏢 🧾</div>
+      </div>
+
+      <div class="field">
+        <label>الاسم بالعربية <span class="req">*</span></label>
+        <input id="fTitleAr" type="text" placeholder="مثال: إصدار خط جديد">
+      </div>
+      <div class="field">
+        <label>الاسم بالإنجليزية <span class="req">*</span></label>
+        <input id="fTitleEn" type="text" placeholder="Example: New Line Activation">
+      </div>
+
+      <div class="field">
+        <label>التصنيف <span class="req">*</span></label>
+        <select id="fCategory"></select>
+        <div class="hint">اختر تصنيفاً موجوداً، أو «تصنيف جديد» لإضافته.</div>
+      </div>
+      <div class="field" id="fNewCatFields" style="display:none">
+        <label>اسم التصنيف الجديد بالعربية / بالإنجليزية</label>
+        <input id="fNewCatAr" type="text" placeholder="اسم التصنيف بالعربية">
+        <input id="fNewCatEn" type="text" placeholder="English category name" style="margin-top:6px">
+        <input id="fNewCatIcon" type="text" placeholder="أيقونة التصنيف (مثل 🏦)" style="margin-top:6px">
+      </div>
+
+      <div class="field">
+        <label>الملخص بالعربية <span class="req">*</span></label>
+        <input id="fSumAr" type="text" placeholder="سطر واحد مختصر يظهر في بطاقة الخدمة">
+      </div>
+      <div class="field">
+        <label>الملخص بالإنجليزية <span class="req">*</span></label>
+        <input id="fSumEn" type="text" placeholder="Short one-line summary in English">
+      </div>
+
+      <div class="field full">
+        <label>الشرح بالعربية <span class="req">*</span></label>
+        <textarea id="fDescAr" placeholder="اكتب الشرح التفصيلي… (سطر فارغ بين السطور = فقرة جديدة في العرض)"></textarea>
+      </div>
+      <div class="field full">
+        <label>الشرح بالإنجليزية <span class="req">*</span></label>
+        <textarea id="fDescEn" placeholder="Detailed English description… (blank line = new paragraph)"></textarea>
+      </div>
+
+      <div class="field full">
+        <label>الخطوات بالعربية</label>
+        <textarea id="fStepsAr" placeholder="الخطوة الأولى
+الخطوة الثانية
+الخطوة الثالثة"></textarea>
+        <div class="hint">كل سطر = خطوة. تُعرض مرقّمة تلقائياً في الموقع.</div>
+      </div>
+      <div class="field full">
+        <label>الخطوات بالإنجليزية</label>
+        <textarea id="fStepsEn" placeholder="Step one
+Step two"></textarea>
+      </div>
+
+      <div class="field full">
+        <label>رابط الفيديو</label>
+        <input id="fVideo" type="url" placeholder="https://www.youtube.com/watch?v=… أو https://youtu.be/…">
+        <div class="hint">اتركه فارغاً إذا لم يُرفع الفيديو بعد — سيُخفى قسم الفيديو تلقائياً.</div>
+      </div>
+
+      <div class="field">
+        <label>الزمن المتوقع بالعربية</label>
+        <input id="fTimeAr" type="text" placeholder="مثال: 5 دقائق">
+      </div>
+      <div class="field">
+        <label>الزمن المتوقع بالإنجليزية</label>
+        <input id="fTimeEn" type="text" placeholder="Example: 5 minutes">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="btnGenerate">توليد بيانات الخدمة</button>
+      <button class="btn btn-outline" id="btnPreview">معاينة سريعة</button>
+      <button class="btn btn-outline" onclick="window.open('excel-to-site.html','_blank')">فتح أداة التحويل</button>
+    </div>
+  </div>
+
+  <!-- ===== المعاينة ===== -->
+  <div class="card">
+    <h2>👁 معاينة شكل الخدمة على الموقع</h2>
+    <div id="previewBox">
+      <div class="pv-card">
+        <span class="pv-icon">📱</span>
+        <div>
+          <div class="pv-title">عنوان الخدمة</div>
+          <div class="pv-cat">📦 التصنيف</div>
+          <div class="pv-sum">الملخص المختصر يظهر هنا</div>
+          <div class="pv-video">🎬 بدون فيديو</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== النتيجة ===== -->
+  <div class="card" id="result">
+    <h2>✅ تم توليد بيانات الخدمة</h2>
+    <p class="sub" id="resultMsg"></p>
+    <div class="actions">
+      <button class="btn btn-primary" id="btnDownload">⬇ تنزيل الخدمة (ملف CSV)</button>
+      <button class="btn btn-outline" id="btnCopy">نسخ الكود</button>
+    </div>
+    <textarea id="csvOut" readonly></textarea>
+  </div>
+
+  <footer>من يُتلقّى ملف «خدمة-جديدة.csv»: يرفعه مباشرة في أداة التحويل (وضع دمج) ← ينزّل services.js ← يُحدّث data/services.js ← GitHub.</footer>
+</div>
+
+<script src="../data/services.js"></script>
+<script src="../js/spreadsheet-import.js"></script>
+<script>
+(function () {
+  'use strict';
+  var SI = window.SpreadsheetImport;
+  var BUILTIN_CATS = (typeof CATEGORIES !== 'undefined') ? CATEGORIES : [];
+  var BUILTIN_SERVICES = (typeof SERVICES_DATA !== 'undefined') ? SERVICES_DATA : [];
+  var lastCsvRow = '';
+  var lastObj = null;
+
+  /* ---------- تعبئة التصنيفات ---------- */
+  var sel = document.getElementById('fCategory');
+  BUILTIN_CATS.forEach(function (c) {
+    var o = document.createElement('option');
+    o.value = c.id;
+    o.textContent = c.icon + ' ' + c.title_ar;
+    sel.appendChild(o);
+  });
+  var oNew = document.createElement('option');
+  oNew.value = '__new__';
+  oNew.textContent = '➕ تصنيف جديد…';
+  sel.appendChild(oNew);
+  sel.addEventListener('change', function () {
+    document.getElementById('fNewCatFields').style.display = sel.value === '__new__' ? 'block' : 'none';
+  });
+
+  /* ---------- جمع القيم ---------- */
+  function collect() {
+    function v(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+    var isNewCat = sel.value === '__new__';
+    var catId = isNewCat ? SI.slugify(v('fNewCatAr') || 'new-category') : sel.value;
+
+    var stepsAr = v('fStepsAr').split(/\r?\n/).map(function (s) { return s.trim(); }).filter(Boolean);
+    var stepsEn = v('fStepsEn').split(/\r?\n/).map(function (s) { return s.trim(); }).filter(Boolean);
+
+    var titleAr = v('fTitleAr'), titleEn = v('fTitleEn');
+    var id = SI.slugify(titleAr || titleEn || '');
+
+    var obj = {
+      id: id,
+      category: catId,
+      icon: v('fIcon') || '📦',
+      title_ar: titleAr || titleEn,
+      title_en: titleEn || titleAr,
+      summary_ar: v('fSumAr'),
+      summary_en: v('fSumEn'),
+      description_ar: v('fDescAr'),
+      description_en: v('fDescEn'),
+      steps_ar: stepsAr,
+      steps_en: stepsEn,
+      video_url: v('fVideo'),
+      time_ar: v('fTimeAr'),
+      time_en: v('fTimeEn')
+    };
+
+    var newCatInfo = null;
+    if (isNewCat) {
+      newCatInfo = { id: catId, icon: v('fNewCatIcon') || '📦', title_ar: v('fNewCatAr') || catId, title_en: v('fNewCatEn') || catId };
+    }
+    return { obj: obj, newCatInfo: newCatInfo };
+  }
+
+  /* ---------- تحقق ---------- */
+  function validate(c) {
+    var errors = [];
+    if (!c.obj.title_ar) errors.push('الاسم بالعربية');
+    if (!c.obj.title_en) errors.push('الاسم بالإنجليزية');
+    if (!c.obj.summary_ar) errors.push('الملخص بالعربية');
+    if (!c.obj.summary_en) errors.push('الملخص بالإنجليزية');
+    if (!c.obj.description_ar && !c.obj.description_en) errors.push('الشرح');
+    if (!c.obj.category) errors.push('التصنيف');
+    return errors;
+  }
+
+  /* ---------- بناء سطر CSV (مطابق لقالب التحويل) ---------- */
+  function buildCsv(c) {
+    var header = ['معرّف الخدمة (id)', 'التصنيف (category)', 'الأيقونة (icon)',
+      'العنوان بالعربية', 'العنوان بالإنجليزية', 'الملخص بالعربية', 'الملخص بالإنجليزية',
+      'الشرح بالعربية', 'الشرح بالإنجليزية', 'الخطوات بالعربية (كل خطوة بسطر)', 'الخطوات بالإنجليزية',
+      'رابط الفيديو (video_url)', 'الزمن بالعربية', 'الزمن بالإنجليزية',
+      'أيقونة التصنيف (category_icon)', 'اسم التصنيف بالعربية', 'اسم التصنيف بالإنجليزية'];
+    var nc = c.newCatInfo;
+    var row = [
+      c.obj.id, c.obj.category, c.obj.icon,
+      c.obj.title_ar, c.obj.title_en, c.obj.summary_ar, c.obj.summary_en,
+      c.obj.description_ar, c.obj.description_en,
+      c.obj.steps_ar.join('\n'), c.obj.steps_en.join('\n'),
+      c.obj.video_url, c.obj.time_ar, c.obj.time_en,
+      nc ? nc.icon : '', nc ? nc.title_ar : '', nc ? nc.title_en : ''
+    ];
+    function esc(x) {
+      x = String(x == null ? '' : x);
+      return /[",\n\r]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x;
+    }
+    return [header.map(esc).join(','), row.map(esc).join(',')].join('\n');
+  }
+
+  /* ---------- معاينة ---------- */
+  document.getElementById('btnPreview').addEventListener('click', function () {
+    var c = collect();
+    var box = document.getElementById('previewBox');
+    box.innerHTML = '<div class="pv-card"><span class="pv-icon">' + (c.obj.icon || '📦') + '</span><div>' +
+      '<div class="pv-title">' + (c.obj.title_ar || '—') + '</div>' +
+      '<div class="pv-cat">' + (c.newCatInfo ? (c.newCatInfo.icon + ' ' + c.newCatInfo.title_ar) : c.obj.category) + '</div>' +
+      '<div class="pv-sum">' + (c.obj.summary_ar || '—') + '</div>' +
+      '<div class="pv-video">' + (c.obj.video_url ? '🎬 فيديو موجود' : '🎬 بدون فيديو') + '</div>' +
+      '</div></div>';
+  });
+
+  /* ---------- توليد ---------- */
+  document.getElementById('btnGenerate').addEventListener('click', function () {
+    var c = collect();
+    var errors = validate(c);
+    if (errors.length) {
+      alert('الحقول الناقصة: ' + errors.join('، ') + ' — يُرجى تعبئتها أولاً.');
+      return;
+    }
+    // تحذير مهذب في حال كانت خدمة تعديلاً لخدمة موجودة
+    var exists = BUILTIN_SERVICES.some(function (s) { return s.id === c.obj.id; });
+    lastObj = { obj: c.obj, newCatInfo: c.newCatInfo, isUpdate: exists };
+    lastCsvRow = buildCsv(c);
+
+    var msg = exists
+      ? 'سيتحدّث محتوى الخدمة الحالية التي تحمل المعرّف (' + c.obj.id + ') داخل الموقع.'
+      : 'خدمة جديدة برقم <b>' + c.obj.id + '</b> ستُضاف للكتيب.';
+    if (c.newCatInfo) msg += ' وسيُضاف تصنيف جديد: <b>' + c.newCatInfo.title_ar + '</b>.';
+    document.getElementById('resultMsg').innerHTML = msg;
+    document.getElementById('csvOut').value = lastCsvRow;
+    document.getElementById('result').classList.add('show');
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  /* ---------- تنزيل / نسخ ---------- */
+  document.getElementById('btnDownload').addEventListener('click', function () {
+    if (!lastCsvRow) return;
+    var arr = [];
+    if (lastObj && lastObj.isUpdate) {
+      // إشعار صغير، لكن نستمر
+    }
+    var blob = new Blob([ '\uFEFF' + lastCsvRow ], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'خدمة-جديدة.csv';
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 100);
+  });
+
+  document.getElementById('btnCopy').addEventListener('click', function () {
+    var ta = document.getElementById('csvOut');
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(lastCsvRow).then(function () { alert('تم النسخ ✓'); });
+      return;
+    }
+    alert(ok ? 'تم النسخ ✓' : 'انسخ يدوياً (Ctrl+C) من المربع');
+  });
+})();
+</script>
+</body>
+</html>
