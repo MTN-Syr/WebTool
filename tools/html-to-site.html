@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إضافة خدمات من CC Web Tool أو Word | MTN Syria</title>
+<style>
+:root { --ylw:#ffcb00; --bg:#f4f6fb; --surface:#fff; --border:#e5e8ef; --text:#111827; --muted:#5b6472; --green:#16a34a; --red:#dc2626; }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'Cairo','Segoe UI',Tahoma,sans-serif; background:var(--bg); color:var(--text); line-height:1.7; padding-bottom:60px; }
+.container { max-width:900px; margin:0 auto; padding:0 18px; }
+header { background:#000; color:#fff; padding:18px 0; border-bottom:4px solid var(--ylw); margin-bottom:22px; }
+header h1 { font-size:19px; display:flex; align-items:center; gap:10px; }
+header .logo { background:var(--ylw); color:#000; border-radius:8px; padding:2px 8px; font-weight:800; font-size:14px; }
+.card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px 22px; margin-bottom:16px; }
+.card h2 { font-size:16px; margin-bottom:6px; }
+.card .sub { font-size:13.5px; color:var(--muted); margin-bottom:12px; }
+.drop { border:2px dashed #c3c9d6; border-radius:14px; padding:34px 16px; text-align:center; color:var(--muted); background:#fafbfe; transition:.2s; cursor:pointer; }
+.drop.drag { border-color:var(--ylw); background:#fffbe6; }
+.drop b { color:var(--text); }
+#pasteZone { display:none; margin-top:12px; }
+#pasteBox { width:100%; min-height:120px; direction:ltr; text-align:left; font-family:Consolas,monospace; font-size:12px; border:1.5px solid var(--border); border-radius:10px; padding:10px; }
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 18px; border-radius:12px; font-weight:700; font-size:14px; border:1px solid transparent; cursor:pointer; font-family:inherit; }
+.btn-primary { background:var(--ylw); color:#000; }
+.btn-primary:disabled { opacity:.5; cursor:not-allowed; }
+.btn-outline { background:transparent; border-color:var(--border); color:var(--text); }
+.actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+.result-item { border:1px solid var(--border); border-radius:12px; padding:12px 16px; margin-bottom:10px; display:flex; align-items:center; gap:12px; }
+.result-item .ic { font-size:26px; }
+.result-item .meta { flex:1; }
+.result-item .meta .t { font-weight:800; font-size:14.5px; }
+.result-item .meta .d { font-size:12.5px; color:var(--muted); }
+.badge { font-size:11.5px; padding:2px 10px; border-radius:20px; font-weight:700; white-space:nowrap; }
+.badge.ok { background:#e8f7ee; color:var(--green); }
+.badge.err { background:#fdecec; color:var(--red); }
+#summary { display:none; }
+#summary.show { display:block; }
+#warning { padding:14px 18px; border-radius:12px; background:#fff7e0; border:1px solid #f0d488; font-size:13.5px; margin-bottom:14px; }
+#out { display:none; }
+#out.show { display:block; }
+#codeOut { width:100%; min-height:140px; direction:ltr; text-align:left; font-family:Consolas,monospace; font-size:11.5px; background:#0d0e12; color:#d1e7dd; border-radius:10px; padding:12px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="container"><h1><span class="logo">MTN</span> إضافة/تحديث الخدمات من CC Web Tool أو ملفات Word</h1></div>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>📥 الطريقة</h2>
+    <p class="sub">
+      اسحب إلى المنطقة أدناه أحد النوعين:
+    </p>
+    <ul class="sub" style="list-style:inside;display:grid;gap:4px">
+      <li><b>صفحات HTML محفوظة</b> من CC Web Tool (من مجلد <code>Webtool/WebTool</code>) — اسحب الصفحة مع ملفات مجلدها <code>_files</code> لالتقاط الصور.</li>
+      <li><b>ملفات Word (.docx)</b> مثل «الاشتراك بالخط المسبق الدفع.docx» — تُستخرج النصوص والصور تلقائياً.</li>
+    </ul>
+    <p class="sub">
+      تُستخرج الخدمة (الوصف + الخطوات + الفيديو + الصور)، ثم اضغط «توليد services.js» واستبدل به ملف <code>data/services.js</code>.
+      <br>💡 دمج تلقائي: إعادة إرسال نفس الملف تحدّث الخدمة بدل تكرارها.
+    </p>
+
+    <div class="drop" id="drop">
+      <div style="font-size:38px">🗂️</div>
+      <div>اسحب هنا ملفات <b>HTML</b> (مع مجلد <code>_files</code>) أو ملفات <b>Word (.docx)</b>…</div>
+      <div style="margin-top:6px;font-size:12.5px">أو <a href="#" id="browse">اختر الملفات</a> · أو <a href="#" id="btnPaste">لصق كود صفحة HTML</a></div>
+    </div>
+    <input type="file" id="fileInput" multiple accept=".html,.htm,.docx,.png,.jpg,.jpeg,.gif" style="display:none">
+
+    <div id="pasteZone">
+      <textarea id="pasteBox" placeholder="الصق هنا محتوى صفحة HTML كاملة واحدة محفوظة من CC Web Tool…"></textarea>
+      <div class="actions"><button class="btn btn-primary" id="btnParsePaste">استخراج الصفحة الملصقة</button></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="btnGenerate" disabled>توليد services.js (الدمج)</button>
+      <button class="btn btn-outline" id="btnBackup">نسخة احتياطية (services.js الحالي)</button>
+    </div>
+  </div>
+
+  <div id="warning" style="display:none"></div>
+
+  <div class="card" id="out">
+    <h2>✅ تم توليد الملف</h2>
+    <p class="sub" id="outMsg"></p>
+    <div class="actions">
+      <button class="btn btn-primary" id="btnDownload">⬇ تنزيل services.js</button>
+      <button class="btn btn-outline" id="btnCopy">نسخ الكود</button>
+    </div>
+    <textarea id="codeOut" readonly></textarea>
+  </div>
+
+  <div class="card" id="summary">
+    <h2>🔍 النتيجة لكل ملف</h2>
+    <div id="resultsList"></div>
+  </div>
+
+</div>
+
+<script src="../data/services.js"></script>
+<script src="../js/html-import.js"></script>
+<script src="../js/docx-import.js"></script>
+<script src="vendor/jszip.min.js"></script>
+<script>
+(function () {
+  'use strict';
+  var HI = window.HtmlImport;
+  var SERVICES = (typeof SERVICES_DATA !== 'undefined') ? SERVICES_DATA.slice() : [];
+  var CATS = (typeof CATEGORIES !== 'undefined') ? CATEGORIES.slice() : [];
+  var results = [];
+  var lastCode = '';
+
+  var drop = document.getElementById('drop');
+  var fileInput = document.getElementById('fileInput');
+
+  ['dragenter', 'dragover'].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('drag'); });
+  });
+  ['dragleave', 'drop'].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('drag'); });
+  });
+  drop.addEventListener('drop', function (e) { handleFiles(e.dataTransfer.files); });
+  document.getElementById('browse').addEventListener('click', function (e) { e.preventDefault(); fileInput.click(); });
+  fileInput.addEventListener('change', function () { if (fileInput.files.length) handleFiles(fileInput.files); });
+
+  function handleFiles(files) {
+    var html = [], docx = [], imgs = [];
+    for (var i = 0; i < files.length; i++) {
+      var n = files[i].name;
+      if (/\.html?$/i.test(n)) html.push(files[i]);
+      else if (/\.docx$/i.test(n)) docx.push(files[i]);
+      else if (/\.(png|jpe?g|gif|svg|webp|bmp)$/i.test(n)) imgs.push(files[i]);
+    }
+    if (!html.length && !docx.length) {
+      alert('اختر ملفات HTML المحفوظة (الصفحة + مجلدها _files للصور) أو ملفات Word (.docx).');
+      return;
+    }
+    imgMap = {};
+    readImgs(imgs, 0, function () {
+      readSeq(html, 0, function () {
+        readDocxSeq(docx, 0, function () { render(); });
+      });
+    });
+  }
+
+  function readImgs(files, i, done) {
+    if (i >= files.length) { done(); return; }
+    var f = files[i];
+    var reader = new FileReader();
+    reader.onload = function () {
+      var base = f.name.replace(/^.*[\\/]/, '');
+      imgMap[base] = reader.result;
+      imgMap[decodeURIComponent(base)] = reader.result;
+      readImgs(files, i + 1, done);
+    };
+    reader.onerror = function () { readImgs(files, i + 1, done); };
+    reader.readAsDataURL(f);
+  }
+
+  function readSeq(files, i, done) {
+    if (i >= files.length) { done(); return; }
+    var f = files[i];
+    var reader = new FileReader();
+    reader.onload = function () { extractFromString(reader.result, f.name); readSeq(files, i + 1, done); };
+    reader.onerror = function () { results.push({ ok: false, err: 'تعذر قراءة الملف' }); readSeq(files, i + 1, done); };
+    reader.readAsText(f);
+  }
+
+  function readDocxSeq(files, i, done) {
+    if (i >= files.length) { done(); return; }
+    var f = files[i];
+    var reader = new FileReader();
+    reader.onload = function () {
+      window.JSZip.loadAsync(reader.result).then(function (zip) {
+        return window.DocxImport.extractService(zip, { file: f.name });
+      }).then(function (svc) {
+        if (svc.error) { results.push({ ok: false, name: f.name, err: svc.error }); }
+        else results.push({ ok: true, name: f.name, svc: svc, wordCount: (svc.description_ar + ' ' + (svc.steps_ar || []).join(' ')).replace(/\s/g, '').length });
+        readDocxSeq(files, i + 1, done);
+      }).catch(function (e) {
+        results.push({ ok: false, name: f.name, err: 'تعذر فتح ملف Word: ' + (e && e.message ? e.message : e) });
+        readDocxSeq(files, i + 1, done);
+      });
+    };
+    reader.onerror = function () { results.push({ ok: false, name: f.name, err: 'تعذر قراءة الملف' }); readDocxSeq(files, i + 1, done); };
+    reader.readAsArrayBuffer(f);
+  }
+
+  document.getElementById('btnPaste').addEventListener('click', function (e) {
+    e.preventDefault();
+    document.getElementById('pasteZone').style.display = document.getElementById('pasteZone').style.display === 'none' ? 'block' : 'none';
+  });
+  document.getElementById('btnParsePaste').addEventListener('click', function () {
+    var v = document.getElementById('pasteBox').value;
+    if (!v.trim()) { alert('ألصق كود الصفحة أولاً.'); return; }
+    extractFromString(v, 'ملف ملصق');
+    render();
+  });
+
+  function extractFromString(html, name) {
+    var svc = HI.extractService(html, { file: name, files: Object.assign({}, imgMap) });
+    if (svc.error) { results.push({ ok: false, name: name, err: svc.error }); return; }
+    results.push({ ok: true, name: name, svc: svc, wordCount: (svc.description_ar + ' ' + (svc.steps_ar || []).join(' ')).replace(/\s/g, '').length });
+  }
+
+  function render() {
+    var listEl = document.getElementById('resultsList');
+    listEl.innerHTML = '';
+    document.getElementById('summary').classList.add('show');
+    var warn = document.getElementById('warning');
+    var errs = 0, oks = 0;
+    warndoses: {
+      results.forEach(function (r) {
+        var div = document.createElement('div');
+        div.className = 'result-item';
+        if (!r.ok) {
+          errs++;
+          div.innerHTML = '<span class="ic">⚠️</span><div class="meta"><div class="t">' + esc(r.name || '') + '</div><div class="d">' + esc(r.err) + '</div></div><span class="badge err">فشل</span>';
+        } else {
+          oks++;
+          var imgs = (r.svc.images_ar || []);
+          var miss = (r.svc.missing_images || []);
+          var thumbs = imgs.slice(0, 3).map(function (im) {
+            return '<img src="' + im.src + '" style="display:inline-block;width:46px;height:34px;object-fit:cover;border-radius:6px;border:1px solid var(--border);margin-left:4px;background:#eee" alt="">';
+          }).join('');
+          div.innerHTML = '<span class="ic">' + esc(r.svc.icon) + '</span><div class="meta"><div class="t">' + esc(r.svc.title_ar || r.svc.title_en || r.svc.sourceTitle) + '</div>' +
+            '<div class="d">' + (r.svc.lang === 'ar' ? 'عربي' : 'إنجليزي') + ' · ' + Math.round(r.wordCount / 100) / 10 + 'K حرف · خطوات: ' + r.svc.steps_ar.length +
+            ' · 📷 صور: ' + imgs.length + (r.svc.tables_ar && r.svc.tables_ar.length ? ' · 📊 جداول: ' + r.svc.tables_ar.length : '') + (r.svc.heads_ar && r.svc.heads_ar.length ? ' · 🔖 عناوين: ' + r.svc.heads_ar.length : '') + (miss.length ? ' ⚠️ مفقودة: ' + miss.length : ' ·') + (r.svc.video_url ? ' 🎬 فيديو: نعم' : ' 🎬 بدون فيديو') + '<div style="margin-top:6px">' + thumbs + '</div></div></div><span class="badge ok">جاهز</span>';
+        }
+        listEl.appendChild(div);
+      });
+    }
+    warn.style.display = 'none';
+    var warns = [];
+    if (errs) warns.push('⚠️ تعذّر استخراج ' + errs + ' ملف — تأكد أنه الصفحة المحفوظة الكاملة أو ملف Word صالح.');
+    var totMiss = results.reduce(function (s, r) { return s + (r.svc && r.svc.missing_images ? r.svc.missing_images.length : 0); }, 0);
+    if (totMiss) warns.push('⚠️ ' + totMiss + ' صورة ناقصة في المعاينة أعلاه — أعد سحب الصفحة مع ملفات مجلدها <code>_files</code> كاملة (حددها كافة مع ملف الصفحة معاً).');
+    if (warns.length) { warn.innerHTML = warns.join('<br>'); warn.style.display = 'block'; }
+    document.getElementById('btnGenerate').disabled = false;
+  }
+
+  document.getElementById('btnGenerate').addEventListener('click', function () {
+    var incoming = results.filter(function (r) { return r.ok; }).map(function (r) { return r.svc; });
+    if (!incoming.length) { alert('لا توجد خدمات مستخرجة.'); return; }
+    // دمج مع الخدمات الحالية
+    var merged = HI.merge(SERVICES, incoming);
+    // دمج التصنيفات (إضافة أي تصنيف جديد ظهر)
+    var catMap = {};
+    CATS.forEach(function (c) { catMap[c.id] = c; });
+    merged.services.forEach(function (s) {
+      if (!catMap[s.category]) {
+        catMap[s.category] = { id: s.category, icon: HI.ICONS[s.category] || '📄', title_ar: s.category, title_en: s.category };
+      }
+    });
+    var cats = Object.keys(catMap).map(function (k) { return catMap[k]; });
+    lastCode = HI.generateCode(merged.services, cats);
+    document.getElementById('outMsg').innerHTML = 'الخدمات الكلية: <b>' + merged.services.length + '</b> · المُضافة الآن: <b>' + merged.added + '</b> · المحدَّثة: <b>' + merged.updated + '</b> · التصنيفات: <b>' + cats.length + '</b>';
+    document.getElementById('codeOut').value = lastCode;
+    document.getElementById('out').classList.add('show');
+    document.getElementById('out').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  document.getElementById('btnDownload').addEventListener('click', function () {
+    if (!lastCode) return;
+    var blob = new Blob([lastCode], { type: 'text/javascript;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'services.js';
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 200);
+  });
+
+  document.getElementById('btnCopy').addEventListener('click', function () {
+    var ta = document.getElementById('codeOut');
+    ta.select();
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(lastCode).then(function () { alert('تم النسخ ✓'); }); return; }
+    try { document.execCommand('copy'); alert('تم النسخ ✓'); } catch (e) { alert('انسخ يدوياً (Ctrl+C)'); }
+  });
+
+  document.getElementById('btnBackup').addEventListener('click', function () {
+    var blob = new Blob([HI.generateCode(SERVICES, CATS)], { type: 'text/javascript;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'services-backup.js';
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 200);
+  });
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[<>&"]/g, function (c) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]; }); }
+})();
+</script>
+</body>
+</html>

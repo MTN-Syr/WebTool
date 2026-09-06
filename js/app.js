@@ -340,8 +340,50 @@
 
     // Description paragraphs
     var paragraphs = D(svc).split(/\n{2,}|\n/).map(function (p) { return p.trim(); }).filter(Boolean);
+    var heads = {};
+    (svc.heads_ar || []).forEach(function (h) { heads[h] = 1; });
+    var imgs = (svc.images_ar || []).filter(function (im) { return im && im.src; });
+    var tbls = (svc.tables_ar || []).filter(function (t) { return t && t.rows && t.rows.length; });
+    var maxIdx = Math.max(paragraphs.length - 1, 0);
+    var figures = {};
+    imgs.forEach(function (im) {
+      var at = Math.max(0, Math.min((im.after | 0) || 0, maxIdx));
+      (figures[at] = figures[at] || []).push(im);
+    });
+    var tblAt = {};
+    tbls.forEach(function (t) {
+      var at = Math.max(0, Math.min((t.after | 0) || 0, maxIdx));
+      (tblAt[at] = tblAt[at] || []).push(t);
+    });
+    function figureHtml(im) {
+      return '<figure class="detail-figure">' +
+        '<img class="detail-img" src="' + escapeHtml(im.src) + '" loading="lazy" alt="' + escapeHtml(im.caption || '') + '" onclick="window.open(this.src)">' +
+        (im.caption ? '<figcaption>' + escapeHtml(im.caption) + '</figcaption>' : '') +
+        '</figure>';
+    }
+    function tableHtml(t) {
+      var cols = Math.max.apply(null, t.rows.map(function (r) { return r.length; }));
+      var head = t.rows.slice(0, 1);
+      var body = t.rows.slice(1);
+      function fillRow(row, tag) {
+        var html = '<tr>';
+        for (var i = 0; i < cols; i++) {
+          var v = row[i] != null ? row[i] : '';
+          html += tag === 'th' ? '<th>' + escapeHtml(v) + '</th>' : '<td>' + escapeHtml(v) + '</td>';
+        }
+        return html + '</tr>';
+      }
+      var thead = head.length ? '<thead>' + fillRow(head[0], 'th') + '</thead>' : '';
+      var tbody = body.length ? '<tbody>' + body.map(function (r) { return fillRow(r, 'td'); }).join('') + '</tbody>' : '';
+      return '<div class="detail-table-wrap"><table class="detail-table">' + thead + tbody + '</table></div>';
+    }
+    var descHtml = paragraphs.map(function (p, i) {
+      return '<p' + (heads[i] ? ' class="desc-head"' : '') + '>' + escapeHtml(p) + '</p>' +
+        ((tblAt[i] || []).map(tableHtml).join('')) +
+        ((figures[i] || []).map(figureHtml).join(''));
+    }).join('');
     html += '<section class="detail-section">' +
-      '<div class="detail-desc">' + paragraphs.map(function (p) { return '<p>' + escapeHtml(p) + '</p>'; }).join('') + '</div>' +
+      '<div class="detail-desc">' + descHtml + '</div>' +
     '</section>';
 
     // Steps
