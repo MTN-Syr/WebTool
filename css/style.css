@@ -44,6 +44,10 @@ html[data-theme='dark'] {
   --chip-bg: #22242c;
 }
 
+:root {
+  --header-h: 64px;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { scroll-behavior: smooth; }
@@ -55,6 +59,12 @@ body {
   color: var(--text);
   line-height: 1.7;
   min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: contain;
   transition: background 0.3s ease, color 0.3s ease;
 }
 
@@ -100,9 +110,10 @@ img { max-width: 100%; }
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   box-shadow: var(--shadow);
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
-.site-header .container { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+.site-header .container { display: flex; align-items: center; justify-content: space-between; height: var(--header-h); }
 .header-inner .brand {
   display: flex;
   align-items: center;
@@ -110,13 +121,15 @@ img { max-width: 100%; }
 }
 
 .brand-mark {
-  background: var(--mtn-yellow);
-  color: #000;
-  font-weight: 800;
-  font-size: 20px;
-  letter-spacing: -1px;
-  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+}
+
+.brand-logo {
+  height: 40px;
+  width: auto;
   border-radius: 8px;
+  display: block;
 }
 
 .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
@@ -161,6 +174,8 @@ html[data-theme='light'] .icon-moon { display: none; }
   padding: 90px 20px 20px;
   backdrop-filter: blur(4px);
   animation: fadeIn 0.2s ease;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .search-overlay[hidden] { display: none; }
 
@@ -567,7 +582,7 @@ html[data-theme='dark'] .help-box {
 /* ===== Footer ===== */
 .site-footer {
   border-top: 1px solid var(--border);
-  padding: 24px 0 32px;
+  padding: 24px 0 calc(32px + env(safe-area-inset-bottom, 0px));
   text-align: center;
   color: var(--text-muted);
   font-size: 13px;
@@ -582,16 +597,60 @@ html[data-theme='dark'] .help-box {
 }
 
 @media (max-width: 640px) {
+  :root { --header-h: 58px; }
   .container { padding: 0 14px; }
-  .hero { padding: 26px 20px; }
+  .brand-logo { height: 34px; border-radius: 7px; }
+  .icon-btn { width: 38px; height: 38px; }
+  .lang-btn { width: auto; padding: 0 11px; }
+  .hero { padding: 24px 18px; margin-bottom: 20px; }
+  .hero-emoji { font-size: 34px; }
   .hero-title { font-size: 22px; }
-  .detail { padding: 18px; }
-  .detail-icon { font-size: 36px; }
+  .detail { padding: 16px; border-radius: 16px; }
   .detail-title { font-size: 20px; }
-  .brand-title { font-size: 13px; }
+  .detail-icon { font-size: 36px; }
+  .detail-figure { margin: 12px 0 16px; }
+  .detail-figure .detail-img { height: 200px; max-height: 55vh; }
+  .section-title { font-size: 17px; }
+  .action-bar .btn { flex: 1 1 auto; justify-content: center; }
+  .search-overlay { padding: calc(var(--header-h) + 14px) 12px 12px; overflow-y: auto; }
   .svc-grid { grid-template-columns: 1fr; }
-  .search-overlay { padding-top: 70px; }
-  .detail-figure .detail-img { height: 200px; }
+  .mobile-chip { min-height: 34px; padding: 8px 16px; }
+}
+
+@media (max-width: 560px) {
+  .detail-table { font-size: 12.5px; }
+  .detail-table th, .detail-table td { padding: 7px 8px; }
+  .detail-table-wrap { border-radius: 10px; }
+  .steps-list { gap: 8px; }
+  .steps-list li { padding: 11px 12px; }
+  .help-box { padding: 12px 14px; }
+  .search-results { max-height: 65vh; }
+}
+
+@media (max-width: 400px) {
+  :root { --header-h: 54px; }
+  .container { padding: 0 10px; }
+  .brand-sub { display: none; }
+  .brand-logo { height: 32px; }
+  .brand-title { font-size: 12.5px; }
+  .icon-btn { width: 36px; height: 36px; }
+  .header-actions { gap: 6px; }
+  .hero { padding: 20px 14px; }
+  .hero-title { font-size: 20px; }
+  .hero-tagline { font-size: 13.5px; }
+  .svc-card { padding: 15px; }
+  .detail { padding: 14px; }
+  .detail-head { gap: 12px; }
+  .btn { padding: 10px 14px; }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .hero { padding: 16px 20px; }
+  .hero-emoji { display: none; }
+  .hero-title { font-size: 20px; }
+  .search-overlay { padding-top: calc(var(--header-h) + 8px); }
+  .search-results { max-height: 55vh; }
+  .detail-figure .detail-img { height: 40vh; }
 }
 
 @media (min-width: 901px) {
@@ -629,7 +688,7 @@ html[data-theme='dark'] .help-box {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
     position: sticky;
-    top: 64px;
+    top: var(--header-h);
     z-index: 40;
   }
   .mobile-cat-bar .icon-btn { flex: 0 0 auto; }

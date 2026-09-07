@@ -24,7 +24,8 @@ header {
 }
 header .container { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
 header h1 { font-size:20px; display:flex; align-items:center; gap:10px; }
-header h1 .logo { background:var(--mtn-yellow); color:#000; border-radius:8px; padding:2px 8px; font-size:14px; font-weight:800; }
+header h1 .logo { border-radius:8px; display:inline-flex; }
+header h1 .logo img { height:26px; width:auto; border-radius:6px; display:block; }
 header .steps-hint { font-size:13px; color:#cbd5e1; }
 .card {
   background:var(--surface); border:1px solid var(--border);
@@ -94,7 +95,7 @@ a { color:inherit; }
 
 <header>
   <div class="container">
-    <h1><span class="logo">MTN</span> أداة تحويل الإكسل إلى بيانات الموقع</h1>
+    <h1><span class="logo"><img src="../MTN_Logo.png" alt="MTN"></span> أداة تحويل الإكسل إلى بيانات الموقع</h1>
     <div class="steps-hint">الخطوة 1: حمّل القالب ← الخطوة 2: يعبّئه الموظفون ← الخطوة 3: ارفعه هنا ← الخطوة 4: نزّل ملفات الخدمات (ملف لكل خدمة)</div>
   </div>
 </header>

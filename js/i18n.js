@@ -7,7 +7,7 @@
   var TRANSLATIONS = {
     ar: {
       brandTitle: 'كتيب الخدمات التدريبي',
-      brandSub: 'MTN Syria',
+      brandSub: 'Syria',
       ariaBrand: 'MTN Syria - الرئيسية',
       ariaSearch: 'بحث',
       ariaTheme: 'تبديل الوضع الليلي',
@@ -48,7 +48,7 @@
     },
     en: {
       brandTitle: 'Services Training Guide',
-      brandSub: 'MTN Syria',
+      brandSub: 'Syria',
       ariaBrand: 'MTN Syria - Home',
       ariaSearch: 'Search',
       ariaTheme: 'Toggle dark mode',
