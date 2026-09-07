@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>أداة تحويل الإكسل ← services.js | MTN Syria</title>
+<title>أداة تحويل الإكسل ← خدمات الموقع | MTN Syria</title>
 <style>
 :root {
   --mtn-yellow:#ffcb00; --mtn-yellow-soft:#fff3bf;
@@ -95,7 +95,7 @@ a { color:inherit; }
 <header>
   <div class="container">
     <h1><span class="logo">MTN</span> أداة تحويل الإكسل إلى بيانات الموقع</h1>
-    <div class="steps-hint">الخطوة 1: حمّل القالب ← الخطوة 2: يعبّئه الموظفون ← الخطوة 3: ارفعه هنا ← الخطوة 4: نزّل services.js</div>
+    <div class="steps-hint">الخطوة 1: حمّل القالب ← الخطوة 2: يعبّئه الموظفون ← الخطوة 3: ارفعه هنا ← الخطوة 4: نزّل ملفات الخدمات (ملف لكل خدمة)</div>
   </div>
 </header>
 
@@ -153,19 +153,19 @@ a { color:inherit; }
     </table>
 
     <div class="actions">
-      <button class="btn btn-primary" id="btnDownload">⬇ تنزيل services.js (استبدله في مجلد data)</button>
-      <button class="btn btn-primary" id="btnDownloadSplit">📦 تنزيل حزمة الخدمات المجزأة</button>
+      <button class="btn btn-primary" id="btnDownloadSplit">⬇ تنزيل ملفات الخدمات</button>
       <button class="btn btn-outline" id="btnCopy">نسخ الكود</button>
       <button class="btn btn-outline" id="btnBackup">تنزيل نسخة احتياطية من البيانات الحالية</button>
     </div>
     <textarea id="outBox" class="hidden" readonly></textarea>
   </div>
 
-  <footer>بعد التنزيل: ضع ملف <code>services.js</code> مكانه في <code>data/</code>، أو ملفات حزمة «الخدمات المجزأة» في <code>data/services/</code> — والموقع يتحدّث فوراً.</footer>
+  <footer>بعد التنزيل: انسخ ملفات الخدمات المُنزّلة (ملف لكل خدمة) داخل مجلد <code>data/services/</code> في مشروعك — واستبدل أي ملف موجود بنفس الاسم. إن أُضيفت خدمة <b>جديدة</b> فأضِف اسمها لقائمة <code>SERVICE_FILES</code> في <code>data/services/index.js</code>.</footer>
 </div>
 
 <!-- ===== SheetJS محلياً (لا حاجة للإنترنت) ===== -->
 <script src="vendor/xlsx.full.min.js"></script>
+<script src="vendor/jszip.min.js"></script>
 <!-- ===== بيانات الموقع الحالية ===== -->
 <script src="../data/services/index.js"></script>
 <!-- ===== الوحدة المنطقية ===== -->
@@ -184,9 +184,11 @@ a { color:inherit; }
 
   var mode = 'merge';
   var rawRows = null;
-  var generatedCode = '';
-  var lastResult = null;
+var generatedCode = '';
 
+  var lastSplitPackage = null;
+  var lastNewFiles = {};
+  var lastResult = null;
   var dropzone = document.getElementById('dropzone');
   var fileInput = document.getElementById('fileInput');
   var btnParse = document.getElementById('btnParse');
@@ -196,7 +198,7 @@ a { color:inherit; }
   /* ---------- الحالة ---------- */
   function loadBuiltIn() {
     if (BUILTIN_SERVICES.length) {
-      noteEl.textContent = '✓ تم تحميل البيانات الحالية من data/services.js : ' + BUILTIN_SERVICES.length + ' خدمة — وضع الدمج سيعمل بنجاح.';
+      noteEl.textContent = '✓ تم تحميل الخدمات الحالية من data/services/ : ' + BUILTIN_SERVICES.length + ' خدمة — وضع الدمج سيعمل بنجاح.';
       noteEl.className = 'ok';
     } else {
       noteEl.textContent = 'تنبيه: لم يتم العثور على البيانات الحالية (افتح الأداة من موقعك أو localhost). وضع الاستبدال سيُبقي كل شيء من الإكسل فقط.';
@@ -323,7 +325,18 @@ a { color:inherit; }
         '<td>' + esc(s.category) + '</td><td>' + (s.video_url ? '✓' : '—') + '</td><td>' + s.steps_ar.length + '</td></tr>';
     }).join('');
 
-    generatedCode = SI.generateCode(result.services, result.categories);
+    lastSplitPackage = SI.generateSplitPackage(result.services, result.categories);
+    generatedCode = lastSplitPackage['index.js'];
+    // ملفات الخدمات الجديدة/المعدّلة فقط (من هذا الملف الإكسل) — الناتج المطلوب ملف واحد لكل خدمة
+    var builtinById = {};
+    BUILTIN_SERVICES.forEach(function (s) { builtinById[s.id] = s; });
+    function stable(o) { return JSON.stringify(o, Object.keys(o).sort()); }
+    lastNewFiles = {};
+    result.services.forEach(function (s) {
+      var key = s.id + '.js';
+      var b = builtinById[s.id];
+      if (!b || stable(b) !== stable(s)) lastNewFiles[key] = lastSplitPackage[key];
+    });
     document.getElementById('outBox').value = generatedCode;
     document.getElementById('outBox').classList.remove('hidden');
   }
@@ -341,17 +354,25 @@ a { color:inherit; }
     setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 100);
   }
 
-  document.getElementById('btnDownload').addEventListener('click', function () {
-    if (!generatedCode) return;
-    downloadText('services.js', generatedCode);
-  });
+  function downloadZip(files, zipName) {
+    var zip = new JSZip();
+    Object.keys(files).forEach(function (name) { zip.file(name, files[name]); });
+    zip.generateAsync({ type: 'blob' }).then(function (blob) {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = zipName;
+      document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 200);
+    });
+  }
 
   document.getElementById('btnDownloadSplit').addEventListener('click', function () {
-    if (!generatedCode || !lastResult) { alert('حوّل أولاً ثم نزّل الحزمة.'); return; }
-    var files = SI.generateSplitPackage(lastResult.services, lastResult.categories);
-    Object.keys(files).forEach(function (name) {
-      downloadText('services/' + name, files[name]);
-    });
+    var names = Object.keys(lastNewFiles);
+    if (!names.length) { alert('حوّل أولاً ثم نزّل الملفات.'); return; }
+    names.forEach(function (n) { downloadText(n, lastNewFiles[n]); });
+    if (names.length === 1) {
+      alert('نُزّل الملف: ' + names[0] + ' — ضعه داخل مجلد data/services/ في مشروعك.');
+    }
   });
 
   document.getElementById('btnCopy').addEventListener('click', function () {
@@ -371,7 +392,8 @@ a { color:inherit; }
 
   document.getElementById('btnBackup').addEventListener('click', function () {
     if (!BUILTIN_SERVICES.length) { alert('لا توجد بيانات حالية للنسخ الاحتياطي'); return; }
-    downloadText('services-backup.js', SI.generateCode(BUILTIN_SERVICES, BUILTIN_CATEGORIES));
+    var files = SI.generateSplitPackage(BUILTIN_SERVICES, BUILTIN_CATEGORIES);
+    downloadZip(files, 'services-backup.zip');
   });
 
   /* ---------- توليد قالب XLSX ---------- */

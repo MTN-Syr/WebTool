@@ -55,8 +55,8 @@ header .logo { background:var(--ylw); color:#000; border-radius:8px; padding:2px
       <li><b>جهّز ملف Word</b> — اكتب اسم الخدمة في السطر الأول (مثلاً: «خدمة استقبال المكالمات»)، ثم الشرح التفصيلي تحته.</li>
       <li><b>أضف الصور</b> — الصق كل صورة توضيحية بجانب الفقرة التي تشرحها.</li>
       <li><b>أضف الجداول</b> — اكتبها في Word عادي (جدول → إدراج → جدول).</li>
-      <li><b>اسحب الملف هنا</b> ← ثم اضغط <b>«توليد services.js»</b>.</li>
-      <li><b>نزّل واستبدل</b> — نزّل الملف الجديد وضعه بدلاً من <code>data/services.js</code>.</li>
+      <li><b>اسحب الملف هنا</b> ← ثم اضغط <b>«توليد»</b>.</li>
+      <li><b>نزّل واستبدل</b> — نزّل الحزمة وضَعها في مجلد <code>data/services/</code>.</li>
     </ol>
     <p class="sub" style="margin-top:10px;font-size:13px">
       💡 <b>نصيحة:</b> الجداول والصور والترقيم تُفهم تلقائياً — لا تحتاج تنسيق خاص.
@@ -75,14 +75,54 @@ header .logo { background:var(--ylw); color:#000; border-radius:8px; padding:2px
     </div>
     <input type="file" id="fileInput" multiple accept=".html,.htm,.docx,.png,.jpg,.jpeg,.gif" style="display:none">
 
+    <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <label for="idField" style="font-size:13px;color:var(--muted)">اسم ملف الخدمة (اختياري — مثال: <code>esim</code>):</label>
+      <input type="text" id="idField" placeholder="esim" style="padding:7px 10px;border:1px solid var(--line);border-radius:8px;width:180px">
+      <span style="font-size:12px;color:var(--muted)">املأه عند إضافة خدمة <b>واحدة جديدة</b> ليُسمّى الملف الناتج <code>esim.js</code> بدل الاسم التلقائي.</span>
+    </div>
+
     <div id="pasteZone">
       <textarea id="pasteBox" placeholder="الصق هنا محتوى صفحة HTML كاملة واحدة محفوظة من CC Web Tool…"></textarea>
       <div class="actions"><button class="btn btn-primary" id="btnParsePaste">استخراج الصفحة الملصقة</button></div>
     </div>
 
     <div class="actions">
-      <button class="btn btn-primary" id="btnGenerate" disabled>توليد services.js (الدمج)</button>
-      <button class="btn btn-outline" id="btnBackup">نسخة احتياطية (services.js الحالي)</button>
+      <button class="btn btn-primary" id="btnGenerate" disabled>توليد (استخراج + دمج)</button>
+      <button class="btn btn-outline" id="btnBackup">نسخة احتياطية (الخدمات الحالية)</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>✏️ تخصيص الخدمة <span style="font-size:13px;color:var(--muted)">(اختياري — يُطبَّق على الخدمة المستخرجة)</span></h2>
+    <style>
+      .cust-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 14px; }
+      .cust-grid label { display:block; font-size:13px; color:var(--muted); margin-bottom:4px; }
+      .cust-grid select, .cust-grid input[type=text] { width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:#fff; }
+      .cust-grid textarea { width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:8px; min-height:54px; background:#fff; resize:vertical; }
+      .cust-full { grid-column:1 / -1; }
+    </style>
+    <div class="cust-grid">
+      <div>
+        <label for="catSelect">التصنيف (category)</label>
+        <select id="catSelect">
+          <option value="">— كما اكتشفته الأداة —</option>
+        </select>
+        <div id="catNewWrap" style="display:none;margin-top:6px">
+          <input type="text" id="catNew" placeholder="معرّف التصنيف الجديد باللاتيني — مثال: c-bills">
+        </div>
+      </div>
+      <div>
+        <label for="iconField">الأيقونة (icon)</label>
+        <input type="text" id="iconField" placeholder="اتركه فارغاً للاحتفاظ بالمكتشف — مثال: 📱">
+      </div>
+      <div class="cust-full">
+        <label for="sumAr">الملخص بالعربية (summary_ar)</label>
+        <textarea id="sumAr" placeholder="اتركه فارغاً للاحتفاظ بالمكتشف (أول فقرة من الشرح)…"></textarea>
+      </div>
+      <div class="cust-full">
+        <label for="sumEn">الملخص بالإنجليزية (summary_en)</label>
+        <textarea id="sumEn" placeholder="اتركه فارغاً للاحتفاظ بالمكتشف…"></textarea>
+      </div>
     </div>
   </div>
 
@@ -93,13 +133,13 @@ header .logo { background:var(--ylw); color:#000; border-radius:8px; padding:2px
     <p class="sub" id="outMsg"></p>
     <p class="sub" style="color:var(--text);font-size:14px">
       <b>ماذا تفعل الآن؟</b><br>
-      ١. اضغط <b>«تنزيل services.js»</b> للحصول على الملف المجمّع، <b>أو</b> «تنزيل حزمة الخدمات المجزأة» للحصول على ملف لكل خدمة.<br>
-      ٢. ضع الملفات في مجلد المشروع: <code>data/services.js</code> أو المجلد <code>data/services/</code>.<br>
-      ٣. افتح الموقع — ستظهر الخدمة الجديدة ✓
+      ١. اضغط <b>«⬇ تنزيل ملف الخدمة»</b> — سينزّل ملفاً واحداً فقط لكل خدمة أضفتها (مثل <code>e-sim.js</code>).<br>
+      ٢. انسخ هذا الملف داخل مجلد <code>data/services/</code> في مشروعك (إن كان الملف موجوداً استبدله).<br>
+      ٣. إن كانت الخدمة <b>جديدة</b> (وليس تعديلاً): أضِف اسمها لقائمة <code>SERVICE_FILES</code> في <code>data/services/index.js</code> — أو أرسلها لي لأضيفها نيابةً عنك.<br>
+      ٤. افتح الموقع — ستظهر الخدمة ✓
     </p>
     <div class="actions">
-      <button class="btn btn-primary" id="btnDownload">⬇ تنزيل services.js</button>
-      <button class="btn btn-primary" id="btnDownloadSplit">📦 تنزيل حزمة الخدمات المجزأة</button>
+      <button class="btn btn-primary" id="btnDownloadSplit">⬇ تنزيل ملف الخدمة</button>
       <button class="btn btn-outline" id="btnCopy">نسخ الكود</button>
     </div>
     <textarea id="codeOut" readonly></textarea>
@@ -123,12 +163,45 @@ header .logo { background:var(--ylw); color:#000; border-radius:8px; padding:2px
   var SERVICES = (typeof SERVICES_DATA !== 'undefined') ? SERVICES_DATA.slice() : [];
   var CATS = (typeof CATEGORIES !== 'undefined') ? CATEGORIES.slice() : [];
   var results = [];
-  var lastCode = '';
-  var lastMerged = [];
-  var lastCats = [];
+  var lastSplitPackage = null;
+  var lastNewFiles = {};
+  var imgMap = {};
 
   var drop = document.getElementById('drop');
   var fileInput = document.getElementById('fileInput');
+  var catSelect = document.getElementById('catSelect');
+  var catNewWrap = document.getElementById('catNewWrap');
+
+  // تعبئة قائمة التصنيفات الحالية
+  var knownCats = {};
+  CATS.forEach(function (c) { knownCats[c.id] = true; });
+  CATS.forEach(function (c) {
+    var opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = c.title_ar + ' (' + c.id + ')';
+    catSelect.appendChild(opt);
+  });
+  var optNew = document.createElement('option');
+  optNew.value = '__new__';
+  optNew.textContent = '🆕 تصنيف جديد…';
+  catSelect.appendChild(optNew);
+  catSelect.addEventListener('change', function () {
+    catNewWrap.style.display = catSelect.value === '__new__' ? 'block' : 'none';
+  });
+
+  function applyOverrides(svc) {
+    var catVal = catSelect.value;
+    if (catVal === '__new__') {
+      var nn = document.getElementById('catNew').value.trim();
+      if (nn) svc.category = nn;
+    } else if (catVal) { svc.category = catVal; }
+    var icon = document.getElementById('iconField').value.trim();
+    if (icon) svc.icon = icon;
+    var sa = document.getElementById('sumAr').value.trim();
+    if (sa) svc.summary_ar = sa;
+    var se = document.getElementById('sumEn').value.trim();
+    if (se) svc.summary_en = se;
+  }
 
   ['dragenter', 'dragover'].forEach(function (ev) {
     drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('drag'); });
@@ -186,10 +259,13 @@ header .logo { background:var(--ylw); color:#000; border-radius:8px; padding:2px
   function readDocxSeq(files, i, done) {
     if (i >= files.length) { done(); return; }
     var f = files[i];
+    var idInput = document.getElementById('idField').value.trim();
+    var meta = { file: f.name };
+    if (idInput && files.length === 1) meta.id = idInput;
     var reader = new FileReader();
     reader.onload = function () {
       window.JSZip.loadAsync(reader.result).then(function (zip) {
-        return window.DocxImport.extractService(zip, { file: f.name });
+        return window.DocxImport.extractService(zip, meta);
       }).then(function (svc) {
         if (svc.error) { results.push({ ok: false, name: f.name, err: svc.error }); }
         else results.push({ ok: true, name: f.name, svc: svc, wordCount: (svc.description_ar + ' ' + (svc.steps_ar || []).join(' ')).replace(/\s/g, '').length });
@@ -226,8 +302,7 @@ header .logo { background:var(--ylw); color:#000; border-radius:8px; padding:2px
     document.getElementById('summary').classList.add('show');
     var warn = document.getElementById('warning');
     var errs = 0, oks = 0;
-    warndoses: {
-      results.forEach(function (r) {
+    results.forEach(function (r) {
         var div = document.createElement('div');
         div.className = 'result-item';
         if (!r.ok) {
@@ -246,7 +321,6 @@ header .logo { background:var(--ylw); color:#000; border-radius:8px; padding:2px
         }
         listEl.appendChild(div);
       });
-    }
     warn.style.display = 'none';
     var warns = [];
     if (errs) warns.push('⚠️ تعذّر استخراج ' + errs + ' ملف — تأكد أنه الصفحة المحفوظة الكاملة أو ملف Word صالح.');
@@ -261,6 +335,8 @@ header .logo { background:var(--ylw); color:#000; border-radius:8px; padding:2px
   document.getElementById('btnGenerate').addEventListener('click', function () {
     var incoming = results.filter(function (r) { return r.ok; }).map(function (r) { return r.svc; });
     if (!incoming.length) { alert('لا توجد خدمات مستخرجة.'); return; }
+    // تطبيق تخصيصات المستخدم (category / icon / summary) على الخدمات المستخرجة
+    incoming.forEach(applyOverrides);
     // دمج مع الخدمات الحالية
     var merged = HI.merge(SERVICES, incoming);
     // دمج التصنيفات (إضافة أي تصنيف جديد ظهر)
@@ -268,57 +344,68 @@ header .logo { background:var(--ylw); color:#000; border-radius:8px; padding:2px
     CATS.forEach(function (c) { catMap[c.id] = c; });
     merged.services.forEach(function (s) {
       if (!catMap[s.category]) {
-        catMap[s.category] = { id: s.category, icon: HI.ICONS[s.category] || '📄', title_ar: s.category, title_en: s.category };
+        catMap[s.category] = { id: s.category, icon: s.icon || '📄', title_ar: s.category, title_en: s.category };
       }
     });
     var cats = Object.keys(catMap).map(function (k) { return catMap[k]; });
-    lastCode = HI.generateCode(merged.services, cats);
-    lastMerged = merged.services;
-    lastCats = cats;
-    document.getElementById('outMsg').innerHTML = 'الخدمات الكلية: <b>' + merged.services.length + '</b> · المُضافة الآن: <b>' + merged.added + '</b> · المحدَّثة: <b>' + merged.updated + '</b> · التصنيفات: <b>' + cats.length + '</b>';
-    document.getElementById('codeOut').value = lastCode;
+    lastSplitPackage = HI.generateSplitPackage(merged.services, cats);
+    var indexCode = lastSplitPackage['index.js'];
+    // ملفات الخدمات الجديدة/المعدّلة فقط — الناتج المطلوب هو ملف واحد لكل خدمة
+    lastNewFiles = {};
+    incoming.forEach(function (svc) {
+      var p = HI.generateSplitPackage([svc], cats);
+      lastNewFiles[svc.id + '.js'] = p[svc.id + '.js'];
+    });
+    var msg = 'الخدمات الكلية: <b>' + merged.services.length + '</b> · المُضافة الآن: <b>' + merged.added + '</b> · المحدَّثة: <b>' + merged.updated + '</b> · التصنيفات: <b>' + cats.length + '</b>';
+    if (merged.added > 0) {
+      msg += '<br><small>⚠️ الخدمة جديدة: بعد وضع ملفها في <code>data/services/</code> أضِف اسمها إلى قائمة <code>SERVICE_FILES</code> في <code>data/services/index.js</code> حتى يحمّلها الموقع.</small>';
+    }
+    document.getElementById('outMsg').innerHTML = msg;
+    document.getElementById('codeOut').value = indexCode;
     document.getElementById('out').classList.add('show');
     document.getElementById('out').scrollIntoView({ behavior: 'smooth' });
   });
 
-  document.getElementById('btnDownload').addEventListener('click', function () {
-    if (!lastCode) return;
-    var blob = new Blob([lastCode], { type: 'text/javascript;charset=utf-8' });
+  function downloadFile(content, name) {
+    var blob = new Blob([content], { type: 'application/javascript' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'services.js';
+    a.download = name;
     document.body.appendChild(a); a.click();
     setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 200);
-  });
+  }
 
-  document.getElementById('btnDownloadSplit').addEventListener('click', function () {
-    if (!lastMerged || !lastMerged.length) { alert('ولّد أولاً ثم نزّل الحزمة.'); return; }
-    var files = HI.generateSplitPackage(lastMerged, lastCats);
-    // ننزّل index.js أولاً ثم كل ملف خدمة
-    Object.keys(files).forEach(function (name) {
-      var blob = new Blob([files[name]], { type: 'text/javascript;charset=utf-8' });
+  function downloadZip(files, zipName) {
+    var zip = new JSZip();
+    Object.keys(files).forEach(function (name) { zip.file(name, files[name]); });
+    zip.generateAsync({ type: 'blob' }).then(function (blob) {
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = 'services/' + name;
+      a.download = zipName;
       document.body.appendChild(a); a.click();
       setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 200);
     });
+  }
+
+  document.getElementById('btnDownloadSplit').addEventListener('click', function () {
+    var names = Object.keys(lastNewFiles);
+    if (!names.length) { alert('ولّد أولاً ثم نزّل الملفات.'); return; }
+    names.forEach(function (n) { downloadFile(lastNewFiles[n], n); });
+    if (names.length === 1) {
+      alert('نُزّل الملف: ' + names[0] + ' — ضعه داخل مجلد data/services/ في مشروعك.');
+    }
   });
 
   document.getElementById('btnCopy').addEventListener('click', function () {
     var ta = document.getElementById('codeOut');
     ta.select();
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(lastCode).then(function () { alert('تم النسخ ✓'); }); return; }
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(ta.value).then(function () { alert('تم النسخ ✓'); }); return; }
     try { document.execCommand('copy'); alert('تم النسخ ✓'); } catch (e) { alert('انسخ يدوياً (Ctrl+C)'); }
   });
 
   document.getElementById('btnBackup').addEventListener('click', function () {
-    var blob = new Blob([HI.generateCode(SERVICES, CATS)], { type: 'text/javascript;charset=utf-8' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'services-backup.js';
-    document.body.appendChild(a); a.click();
-    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 200);
+    var files = HI.generateSplitPackage(SERVICES, CATS);
+    downloadZip(files, 'services-backup.zip');
   });
 
   function esc(s) { return String(s == null ? '' : s).replace(/[<>&"]/g, function (c) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]; }); }

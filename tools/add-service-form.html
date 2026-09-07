@@ -89,12 +89,12 @@ a{ color:inherit; }
         <li><span class="step-badge">1</span> استلم ملف الخدمة (CSV) من الموظف.</li>
         <li><span class="step-badge">2</span> افتح صفحة <b>أداة التحويل</b> من رابط موقعك: <code>https://&lt;موقعك&gt;/tools/excel-to-site.html</code></li>
         <li><span class="step-badge">3</span> اسحب الملف إلى الأداة ← اضغط <b>«تحويل الملف»</b> (موضع «دمج» مفعّل مسبقاً = لن تُحذف أي خدمة حالية).</li>
-        <li><span class="step-badge">4</span> راجع «نتيجة التحويل» والمعاينة، ثم اضغط <b>«تنزيل services.js»</b>.</li>
-        <li><span class="step-badge">5</span> استبدل الملف <code>data/services.js</code> في مشروعك بالمُولّد الجديد.</li>
+        <li><span class="step-badge">4</span> راجع «نتيجة التحويل» والمعاينة، ثم اضغط <b>«⬇ تنزيل ملفات الخدمات»</b> — ينزّل ملفاً واحداً لكل خدمة أُضيفت.</li>
+        <li><span class="step-badge">5</span> انسخ الملفات المُنزّلة داخل مجلد <code>data/services/</code> في مشروعك (استبدل أي ملف بنفس الاسم) — وللخدمة الجديدة أضِف اسمها إلى <code>SERVICE_FILES</code> في <code>data/services/index.js</code>.</li>
         <li><span class="step-badge">6</span> ارفع التغيير على GitHub (زر «Commit and push» في GitHub Desktop).</li>
         <li><span class="step-badge">7</span> خلال أقل من دقيقة يصبح الموقع محدّثاً للجميع ✓</li>
       </ol>
-      <p style="font-size:13px;color:var(--muted);margin-top:8px">💡 ملاحظة: إذا كانت هذه أول مرة تتسلم فيها تعديلات، حدّث أولاً نسخة من <code>data/services.js</code> كنسخة احتياطية (زر «نسخة احتياطية» داخل الأداة).</p>
+      <p style="font-size:13px;color:var(--muted);margin-top:8px">💡 ملاحظة: إذا كانت هذه أول مرة تتسلم فيها تعديلات، حدّث أولاً نسخة من الخدمات الحالية كنسخة احتياطية (زر «نسخة احتياطية» داخل الأداة).</p>
     </details>
     <p class="sub" style="margin-top:10px">اختصار في الطريق: بدل الفورم، يمكن للموظف أن يملأ قالب الإكسل الممتلئ بالأمثلة <b>(من زر قوالب أداة التحويل)</b> — نفس النتيجة.</p>
   </div>
@@ -213,7 +213,7 @@ Step two"></textarea>
     <textarea id="csvOut" readonly></textarea>
   </div>
 
-  <footer>من يُتلقّى ملف «خدمة-جديدة.csv»: يرفعه مباشرة في أداة التحويل (وضع دمج) ← ينزّل services.js ← يُحدّث data/services.js ← GitHub.</footer>
+  <footer>من يُتلقّى ملف «خدمة-جديدة.csv»: يرفعه مباشرة في أداة التحويل (وضع دمج) ← «⬇ تنزيل ملفات الخدمات» ← ينسخ الملفات داخل data/services/ ← GitHub.</footer>
 </div>
 
 <script src="../data/services/index.js"></script>

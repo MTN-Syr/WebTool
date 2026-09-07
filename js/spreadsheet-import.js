@@ -221,7 +221,7 @@
     };
   }
 
-  /* ---------- توليد كود services.js ---------- */
+  /* ---------- توليد كود data/services ---------- */
   function generateCode(services, cats) {
     var d = new Date();
     var stamp = d.toISOString().replace('T', ' ').slice(0, 19) + ' UTC';

@@ -16,7 +16,8 @@ var SERVICE_FILES = [
   "puk-security-code.js",
   "reserve-number-sms.js",
   "subscribe-postpaid.js",
-  "subscribe-prepaid.js"
+  "subscribe-prepaid.js",
+  "E-Sim.js"
 ];
 
 var CATEGORIES = [
@@ -26,7 +27,7 @@ var CATEGORIES = [
     "title_ar": "الخطوط والاشتراك",
     "title_en": "Lines & Subscriptions"
   },
-  {
+    {
     "id": "c-cancel",
     "icon": "🗑️",
     "title_ar": "إلغاء الاشتراك",

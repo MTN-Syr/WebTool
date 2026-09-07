@@ -93,7 +93,7 @@
       var code = ET.getGeneratedCode();
       var valid = true;
       try { new Function(code); } catch (e) { valid = false; }
-      add('STEP 4 — generated services.js syntax valid: ' + valid + ' (' + code.length + ' chars)');
+      add('STEP 4 — generated index.js syntax valid: ' + valid + ' (' + code.length + ' chars)');
 
       add('RESULT: ALL STEPS PASSED' + (valid && hasNew && r2.added === 2 && r2.updated === 1 && r3.updated === 1 ? ' ✓' : ' (partial)'));
       document.title = 'E2E ' + (valid ? 'OK' : 'MISS');
