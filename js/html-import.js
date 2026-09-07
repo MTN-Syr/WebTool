@@ -259,12 +259,67 @@
       + 'const CATEGORIES = ' + JSON.stringify(cats, null, 2) + ';\n';
   }
 
+  // يولّد الحزمة المجزأة: index.js + ملف لكل خدمة داخل data/services/
+  function generateSplitPackage(services, cats) {
+    var files = {};
+    var ordered = serviceFileNames(services);
+    var indexJs =
+      '/* ============================================================\n' +
+      '   فهرس الخدمات — يُعرّف التصنيفات ويحمّل ملفات كل خدمة منفصلة.\n' +
+      '   كل ملف service/<id>.js يُضيف خدمته إلى SERVICES_DATA.\n' +
+      '   ============================================================ */\n\n' +
+      'var SERVICES_DATA = [];\n\n' +
+      'var SERVICE_FILES = ' + JSON.stringify(ordered, null, 2) + ';\n\n' +
+      'var CATEGORIES = ' + JSON.stringify(cats, null, 2) + ';\n\n' +
+      '/* تحميل ملفات الخدمات المنفصلة */\n' +
+      '(function () {\n' +
+      '  var base = "data/services/";\n' +
+      '  var scripts = document.getElementsByTagName(\'script\');\n' +
+      '  for (var i = 0; i < scripts.length; i++) {\n' +
+      '    var src = scripts[i].getAttribute(\'src\') || \'\';\n' +
+      '    var idx = src.indexOf(\'data/services/index.js\');\n' +
+      '    if (idx !== -1) { base = src.slice(0, idx + \'data/services/\'.length); break; }\n' +
+      '  }\n' +
+      '  SERVICE_FILES.forEach(function (f) {\n' +
+      '    document.write(\'<script src="\' + base + f + \'"><\\/script>\');\n' +
+      '  });\n' +
+      '})();\n';
+    files['index.js'] = indexJs;
+
+    services.forEach(function (s) {
+      files[s.id + '.js'] =
+        '/* ============================================================\n' +
+        '   الخدمة: ' + (s.title_ar || s.id) + ' / ' + (s.title_en || '') + '\n' +
+        '   الملف منفصل لكل خدمة — أُنشئ تلقائياً.\n' +
+        '   ============================================================ */\n\n' +
+        '(function () {\n' +
+        '  var root = (typeof window !== "undefined") ? window : globalThis;\n' +
+        '  root.SERVICES_DATA = root.SERVICES_DATA || [];\n' +
+        '  root.SERVICES_DATA.push(' + JSON.stringify(s) + ');\n' +
+        '})();\n';
+    });
+    return files;
+  }
+
+  function serviceFileNames(services) {
+    return services.map(function (s) { return s.id + '.js'; }).sort();
+  }
+
   function merge(existing, incoming) {
     var map = {};
-    existing.forEach(function (s) { map[s.id] = s; });
+    var titleMap = {};
+    existing.forEach(function (s) {
+      map[s.id] = s;
+      if (s.title_ar) titleMap[s.title_ar.trim().toLowerCase()] = s.id;
+    });
     var added = 0, updated = 0;
     incoming.forEach(function (s) {
-      if (map[s.id]) { map[s.id] = s; updated++; }
+      var matchId = s.id;
+      if (!map[matchId] && s.title_ar && titleMap[s.title_ar.trim().toLowerCase()]) {
+        matchId = titleMap[s.title_ar.trim().toLowerCase()];
+        s.id = matchId;
+      }
+      if (map[matchId]) { map[matchId] = s; updated++; }
       else { map[s.id] = s; added++; }
     });
     return {
@@ -279,6 +334,7 @@
     slugify: slugify,
     detectCategory: detectCategory,
     generateCode: generateCode,
+    generateSplitPackage: generateSplitPackage,
     merge: merge,
     ICONS: ICONS,
   };

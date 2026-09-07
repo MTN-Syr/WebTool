@@ -242,6 +242,15 @@
         images.sort(function (a, b) { return a.after - b.after; });
 
         var title = meta.title_ar || meta.title || '';
+        if (!title) {
+          // استنتاج الاسم من أول سطر في ملف Word
+          var firstP = (desc.filter(function (p) { return p && p.trim(); })[0] || '').trim();
+          if (firstP) title = firstP.length > 120 ? firstP.slice(0, 120) + '…' : firstP;
+        }
+        // حذف السطر المطابق للعنوان من بداية الشرح (لا يتكرر في الصفحة)
+        if (title) {
+          while (desc.length && desc[0] && desc[0].trim() === title.trim()) desc.shift();
+        }
         var lang = isArabic(desc.join('\n')) ? 'ar' : 'en';
         var summary = desc[0] || '';
         if (String(summary).length > 170) summary = summary.slice(0, 170) + '…';

@@ -48,24 +48,30 @@ header .logo { background:var(--ylw); color:#000; border-radius:8px; padding:2px
 
 <div class="container">
 
+  <div class="card" style="background:linear-gradient(135deg,#fffbe6 0%,#fff 100%);border-color:#f0d488">
+    <h2>📄 كيف تضيف خدمة من ملف Word؟</h2>
+    <p class="sub" style="color:var(--text);font-size:14.5px">اتبع هذه الخطوات البسيطة (5 خطوات فقط):</p>
+    <ol class="sub" style="list-style:decimal inside;display:grid;gap:6px;font-size:14px;color:var(--text)">
+      <li><b>جهّز ملف Word</b> — اكتب اسم الخدمة في السطر الأول (مثلاً: «خدمة استقبال المكالمات»)، ثم الشرح التفصيلي تحته.</li>
+      <li><b>أضف الصور</b> — الصق كل صورة توضيحية بجانب الفقرة التي تشرحها.</li>
+      <li><b>أضف الجداول</b> — اكتبها في Word عادي (جدول → إدراج → جدول).</li>
+      <li><b>اسحب الملف هنا</b> ← ثم اضغط <b>«توليد services.js»</b>.</li>
+      <li><b>نزّل واستبدل</b> — نزّل الملف الجديد وضعه بدلاً من <code>data/services.js</code>.</li>
+    </ol>
+    <p class="sub" style="margin-top:10px;font-size:13px">
+      💡 <b>نصيحة:</b> الجداول والصور والترقيم تُفهم تلقائياً — لا تحتاج تنسيق خاص.
+      إعادة سحب نفس الملف تحدّث الخدمة الحالية بدلاً من تكرارها.
+    </p>
+  </div>
+
   <div class="card">
-    <h2>📥 الطريقة</h2>
-    <p class="sub">
-      اسحب إلى المنطقة أدناه أحد النوعين:
-    </p>
-    <ul class="sub" style="list-style:inside;display:grid;gap:4px">
-      <li><b>صفحات HTML محفوظة</b> من CC Web Tool (من مجلد <code>Webtool/WebTool</code>) — اسحب الصفحة مع ملفات مجلدها <code>_files</code> لالتقاط الصور.</li>
-      <li><b>ملفات Word (.docx)</b> مثل «الاشتراك بالخط المسبق الدفع.docx» — تُستخرج النصوص والصور تلقائياً.</li>
-    </ul>
-    <p class="sub">
-      تُستخرج الخدمة (الوصف + الخطوات + الفيديو + الصور)، ثم اضغط «توليد services.js» واستبدل به ملف <code>data/services.js</code>.
-      <br>💡 دمج تلقائي: إعادة إرسال نفس الملف تحدّث الخدمة بدل تكرارها.
-    </p>
+    <h2>📥 اسحب الملفات</h2>
+    <p class="sub">اسحب ملفات Word (.docx) أو صفحات HTML المحفوظة إلى المنطقة أدناه:</p>
 
     <div class="drop" id="drop">
       <div style="font-size:38px">🗂️</div>
-      <div>اسحب هنا ملفات <b>HTML</b> (مع مجلد <code>_files</code>) أو ملفات <b>Word (.docx)</b>…</div>
-      <div style="margin-top:6px;font-size:12.5px">أو <a href="#" id="browse">اختر الملفات</a> · أو <a href="#" id="btnPaste">لصق كود صفحة HTML</a></div>
+      <div>اسحب هنا ملفات <b>Word (.docx)</b> أو صفحات <b>HTML</b>…</div>
+      <div style="margin-top:6px;font-size:12.5px">أو <a href="#" id="browse">اختر الملفات من الجهاز</a> · أو <a href="#" id="btnPaste">لصق كود صفحة HTML</a></div>
     </div>
     <input type="file" id="fileInput" multiple accept=".html,.htm,.docx,.png,.jpg,.jpeg,.gif" style="display:none">
 
@@ -83,10 +89,17 @@ header .logo { background:var(--ylw); color:#000; border-radius:8px; padding:2px
   <div id="warning" style="display:none"></div>
 
   <div class="card" id="out">
-    <h2>✅ تم توليد الملف</h2>
+    <h2>✅ تم بنجاح!</h2>
     <p class="sub" id="outMsg"></p>
+    <p class="sub" style="color:var(--text);font-size:14px">
+      <b>ماذا تفعل الآن؟</b><br>
+      ١. اضغط <b>«تنزيل services.js»</b> للحصول على الملف المجمّع، <b>أو</b> «تنزيل حزمة الخدمات المجزأة» للحصول على ملف لكل خدمة.<br>
+      ٢. ضع الملفات في مجلد المشروع: <code>data/services.js</code> أو المجلد <code>data/services/</code>.<br>
+      ٣. افتح الموقع — ستظهر الخدمة الجديدة ✓
+    </p>
     <div class="actions">
       <button class="btn btn-primary" id="btnDownload">⬇ تنزيل services.js</button>
+      <button class="btn btn-primary" id="btnDownloadSplit">📦 تنزيل حزمة الخدمات المجزأة</button>
       <button class="btn btn-outline" id="btnCopy">نسخ الكود</button>
     </div>
     <textarea id="codeOut" readonly></textarea>
@@ -99,7 +112,7 @@ header .logo { background:var(--ylw); color:#000; border-radius:8px; padding:2px
 
 </div>
 
-<script src="../data/services.js"></script>
+<script src="../data/services/index.js"></script>
 <script src="../js/html-import.js"></script>
 <script src="../js/docx-import.js"></script>
 <script src="vendor/jszip.min.js"></script>
@@ -111,6 +124,8 @@ header .logo { background:var(--ylw); color:#000; border-radius:8px; padding:2px
   var CATS = (typeof CATEGORIES !== 'undefined') ? CATEGORIES.slice() : [];
   var results = [];
   var lastCode = '';
+  var lastMerged = [];
+  var lastCats = [];
 
   var drop = document.getElementById('drop');
   var fileInput = document.getElementById('fileInput');
@@ -236,7 +251,9 @@ header .logo { background:var(--ylw); color:#000; border-radius:8px; padding:2px
     var warns = [];
     if (errs) warns.push('⚠️ تعذّر استخراج ' + errs + ' ملف — تأكد أنه الصفحة المحفوظة الكاملة أو ملف Word صالح.');
     var totMiss = results.reduce(function (s, r) { return s + (r.svc && r.svc.missing_images ? r.svc.missing_images.length : 0); }, 0);
-    if (totMiss) warns.push('⚠️ ' + totMiss + ' صورة ناقصة في المعاينة أعلاه — أعد سحب الصفحة مع ملفات مجلدها <code>_files</code> كاملة (حددها كافة مع ملف الصفحة معاً).');
+    if (totMiss) warns.push('⚠️ ' + totMiss + ' صورة ناقصة في المعاينة — أعد سحب الملف مع الصور إن وجدت.');
+    var noTitle = results.filter(function (r) { return r.ok && !r.svc.title_ar && !r.svc.title_en; });
+    if (noTitle.length) warns.push('⚠️ لم يُكتشف اسم الخدمة في: ' + noTitle.map(function(r){ return r.name; }).join('، ') + ' — تأكد أن أول سطر في ملف Word هو اسم الخدمة.');
     if (warns.length) { warn.innerHTML = warns.join('<br>'); warn.style.display = 'block'; }
     document.getElementById('btnGenerate').disabled = false;
   }
@@ -256,6 +273,8 @@ header .logo { background:var(--ylw); color:#000; border-radius:8px; padding:2px
     });
     var cats = Object.keys(catMap).map(function (k) { return catMap[k]; });
     lastCode = HI.generateCode(merged.services, cats);
+    lastMerged = merged.services;
+    lastCats = cats;
     document.getElementById('outMsg').innerHTML = 'الخدمات الكلية: <b>' + merged.services.length + '</b> · المُضافة الآن: <b>' + merged.added + '</b> · المحدَّثة: <b>' + merged.updated + '</b> · التصنيفات: <b>' + cats.length + '</b>';
     document.getElementById('codeOut').value = lastCode;
     document.getElementById('out').classList.add('show');
@@ -270,6 +289,20 @@ header .logo { background:var(--ylw); color:#000; border-radius:8px; padding:2px
     a.download = 'services.js';
     document.body.appendChild(a); a.click();
     setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 200);
+  });
+
+  document.getElementById('btnDownloadSplit').addEventListener('click', function () {
+    if (!lastMerged || !lastMerged.length) { alert('ولّد أولاً ثم نزّل الحزمة.'); return; }
+    var files = HI.generateSplitPackage(lastMerged, lastCats);
+    // ننزّل index.js أولاً ثم كل ملف خدمة
+    Object.keys(files).forEach(function (name) {
+      var blob = new Blob([files[name]], { type: 'text/javascript;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'services/' + name;
+      document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 200);
+    });
   });
 
   document.getElementById('btnCopy').addEventListener('click', function () {

@@ -154,19 +154,20 @@ a { color:inherit; }
 
     <div class="actions">
       <button class="btn btn-primary" id="btnDownload">⬇ تنزيل services.js (استبدله في مجلد data)</button>
+      <button class="btn btn-primary" id="btnDownloadSplit">📦 تنزيل حزمة الخدمات المجزأة</button>
       <button class="btn btn-outline" id="btnCopy">نسخ الكود</button>
       <button class="btn btn-outline" id="btnBackup">تنزيل نسخة احتياطية من البيانات الحالية</button>
     </div>
     <textarea id="outBox" class="hidden" readonly></textarea>
   </div>
 
-  <footer>بعد التنزيل: ضع الملف مكان <code>data/services.js</code> في مشروعك وارفع على GitHub — والموقع يتحدّث فوراً.</footer>
+  <footer>بعد التنزيل: ضع ملف <code>services.js</code> مكانه في <code>data/</code>، أو ملفات حزمة «الخدمات المجزأة» في <code>data/services/</code> — والموقع يتحدّث فوراً.</footer>
 </div>
 
 <!-- ===== SheetJS محلياً (لا حاجة للإنترنت) ===== -->
 <script src="vendor/xlsx.full.min.js"></script>
 <!-- ===== بيانات الموقع الحالية ===== -->
-<script src="../data/services.js"></script>
+<script src="../data/services/index.js"></script>
 <!-- ===== الوحدة المنطقية ===== -->
 <script src="../js/spreadsheet-import.js"></script>
 
@@ -343,6 +344,14 @@ a { color:inherit; }
   document.getElementById('btnDownload').addEventListener('click', function () {
     if (!generatedCode) return;
     downloadText('services.js', generatedCode);
+  });
+
+  document.getElementById('btnDownloadSplit').addEventListener('click', function () {
+    if (!generatedCode || !lastResult) { alert('حوّل أولاً ثم نزّل الحزمة.'); return; }
+    var files = SI.generateSplitPackage(lastResult.services, lastResult.categories);
+    Object.keys(files).forEach(function (name) {
+      downloadText('services/' + name, files[name]);
+    });
   });
 
   document.getElementById('btnCopy').addEventListener('click', function () {

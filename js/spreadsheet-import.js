@@ -237,6 +237,47 @@
       + 'const CATEGORIES = ' + json(cats) + ';';
   }
 
+  /* ---------- توليد الحزمة المجزأة data/services/ ---------- */
+  function generateSplitPackage(services, cats) {
+    var json = function (o) { return JSON.stringify(o, null, 2); };
+    var files = {};
+    var list = services.map(function (s) { return s.id + '.js'; }).sort();
+    files['index.js'] =
+      '/* ============================================================\n' +
+      '   فهرس الخدمات — يُعرّف التصنيفات ويحمّل ملفات كل خدمة منفصلة.\n' +
+      '   كل ملف service/<id>.js يُضيف خدمته إلى SERVICES_DATA.\n' +
+      '   ============================================================ */\n\n' +
+      'var SERVICES_DATA = [];\n\n' +
+      'var SERVICE_FILES = ' + json(list) + ';\n\n' +
+      'var CATEGORIES = ' + json(cats) + ';\n\n' +
+      '(function () {\n' +
+      '  var base = "data/services/";\n' +
+      '  var scripts = document.getElementsByTagName(\'script\');\n' +
+      '  for (var i = 0; i < scripts.length; i++) {\n' +
+      '    var src = scripts[i].getAttribute(\'src\') || \'\';\n' +
+      '    var idx = src.indexOf(\'data/services/index.js\');\n' +
+      '    if (idx !== -1) { base = src.slice(0, idx + \'data/services/\'.length); break; }\n' +
+      '  }\n' +
+      '  SERVICE_FILES.forEach(function (f) {\n' +
+      '    document.write(\'<script src="\' + base + f + \'"><\\/script>\');\n' +
+      '  });\n' +
+      '})();\n';
+
+    services.forEach(function (s) {
+      files[s.id + '.js'] =
+        '/* ============================================================\n' +
+        '   الخدمة: ' + (s.title_ar || s.id) + ' / ' + (s.title_en || '') + '\n' +
+        '   الملف منفصل لكل خدمة — أُنشئ تلقائياً.\n' +
+        '   ============================================================ */\n\n' +
+        '(function () {\n' +
+        '  var root = (typeof window !== "undefined") ? window : globalThis;\n' +
+        '  root.SERVICES_DATA = root.SERVICES_DATA || [];\n' +
+        '  root.SERVICES_DATA.push(' + json(s) + ');\n' +
+        '})();\n';
+    });
+    return files;
+  }
+
   /* ---------- عملية كاملة: صفوف ← نتيجة ---------- */
   function processRows(rows, opts) {
     opts = opts || {};
@@ -304,6 +345,7 @@
     buildCategories: buildCategories,
     buildServices: buildServices,
     generateCode: generateCode,
+    generateSplitPackage: generateSplitPackage,
     processRows: processRows,
     processText: processText,
     processWorkbook: processWorkbook,

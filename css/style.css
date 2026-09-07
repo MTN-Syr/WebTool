@@ -216,6 +216,39 @@ html[data-theme='light'] .icon-moon { display: none; }
 .search-meta small { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .search-cat { font-size: 12px; background: var(--chip-bg); padding: 4px 10px; border-radius: 20px; color: var(--text-muted); white-space: nowrap; }
 .search-empty { padding: 24px; text-align: center; color: var(--text-muted); }
+.search-count { padding: 12px 16px 4px; font-size: 12px; color: var(--text-muted); }
+mark.hl {
+  background: var(--mtn-yellow-soft);
+  color: inherit;
+  border-radius: 3px;
+  padding: 0 2px;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+}
+.search-more {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--border);
+  background: transparent;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 12px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.search-more:hover { background: var(--surface-2); }
+
+.match-target { scroll-margin: 24px; border-radius: 10px; }
+.match-flash { animation: matchFlash 2.4s ease; }
+@keyframes matchFlash {
+  0% { background: var(--mtn-yellow-soft); box-shadow: 0 0 0 6px var(--mtn-yellow-soft); }
+  70% { background: var(--mtn-yellow-soft); box-shadow: 0 0 0 6px var(--mtn-yellow-soft); }
+  100% { background: transparent; box-shadow: transparent; }
+}
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
@@ -291,35 +324,6 @@ html[dir='rtl'] .cat-item { text-align: right; }
   padding: 2px 6px;
   border-radius: 20px;
 }
-
-/* Progress card */
-.progress-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: var(--shadow);
-}
-.progress-head { display: flex; justify-content: space-between; align-items: center; font-size: 14px; margin-bottom: 10px; }
-.progress-head strong { font-size: 14px; }
-.progress-head span { color: var(--mtn-yellow); font-weight: 800; background: var(--icon-bg, transparent); }
-.progress-head .mtn { color: var(--text); }
-
-.progress-bar {
-  height: 8px;
-  border-radius: 10px;
-  background: var(--chip-bg);
-  overflow: hidden;
-}
-.progress-bar span {
-  display: block;
-  height: 100%;
-  width: 0;
-  background: linear-gradient(90deg, #e6b400, var(--mtn-yellow));
-  border-radius: 10px;
-  transition: width 0.4s ease;
-}
-.progress-text { font-size: 12px; color: var(--text-muted); margin: 8px 0 10px; }
 
 .btn {
   display: inline-flex;
@@ -410,18 +414,6 @@ html[dir='rtl'] .cat-item { text-align: right; }
 }
 .svc-card-top { display: flex; align-items: center; justify-content: space-between; }
 .svc-icon { font-size: 32px; }
-.watched-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: #16a34a;
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 20px;
-  white-space: nowrap;
-}
 .svc-title { font-size: 16px; font-weight: 800; }
 .svc-summary {
   font-size: 13px;
@@ -553,7 +545,6 @@ html[dir='rtl'] .cat-item { text-align: right; }
   gap: 12px;
   margin: 22px 0 30px;
 }
-.action-bar .btn.is-watched { background: #16a34a; color: #fff; }
 
 .help-box {
   display: flex;
