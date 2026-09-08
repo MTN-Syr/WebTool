@@ -321,18 +321,32 @@
         '</figure>';
     }
     function tableHtml(t) {
-      var cols = Math.max.apply(null, t.rows.map(function (r) { return r.length; }));
+      function rowCols(row) {
+        return row.reduce(function (n, c) {
+          var cell = (c && typeof c === 'object') ? c : {};
+          return n + (Math.max(1, cell.cs | 0) || 1);
+        }, 0);
+      }
+      var cols = Math.max.apply(null, t.rows.map(rowCols));
       var head = t.rows.slice(0, 1);
       var body = t.rows.slice(1);
       function fillRow(row, tag) {
         var html = '<tr>';
-        for (var i = 0; i < cols; i++) {
-          var v = row[i] != null ? row[i] : '';
+        var used = 0;
+        row.forEach(function (raw) {
+          var cell = (raw && typeof raw === 'object') ? raw : { t: raw };
+          var cs = Math.max(1, cell.cs | 0) || 1;
+          if (cell.rs === 0) { used += cs; return; } // امتداد دمج عمودي: مشغول بلا عنصر
+          var rs = Math.max(1, cell.rs | 0) || 1;
+          used += cs;
+          var v = cell.t != null ? cell.t : '';
           var hit = isMatch(v);
-          html += tag === 'th'
-            ? '<th' + (hit ? ' class="match-target"' : '') + '>' + (hit ? highlight(v, q) : escapeHtml(v)) + '</th>'
-            : '<td' + (hit ? ' class="match-target"' : '') + '>' + (hit ? highlight(v, q) : escapeHtml(v)) + '</td>';
-        }
+          var open = tag === 'th' ? '<th' : '<td';
+          var span = (cs > 1 ? ' colspan="' + cs + '"' : '') + (rs > 1 ? ' rowspan="' + rs + '"' : '');
+          var cls = hit ? ' class="match-target"' : '';
+          html += open + span + cls + '>' + buildRich(v, q) + '</' + (tag === 'th' ? 'th' : 'td') + '>';
+        });
+        for (; used < cols; used++) html += tag === 'th' ? '<th></th>' : '<td></td>';
         return html + '</tr>';
       }
       var thead = head.length ? '<thead>' + fillRow(head[0], 'th') + '</thead>' : '';
@@ -345,7 +359,7 @@
         (heads[i] ? ' desc-head' : '') +
         (matches ? ' match-target' : '');
       return '<p id="para-' + i + '" class="' + cls + '">' +
-        (matches ? highlight(p, q) : escapeHtml(p)) +
+        buildRich(p, q) +
         '</p>' +
         ((tblAt[i] || []).map(tableHtml).join('')) +
         ((figures[i] || []).map(figureHtml).join(''));
@@ -362,7 +376,7 @@
         '<ol class="steps-list">' +
         steps.map(function (step, i) {
           var hit = isMatch(step);
-          return '<li class="' + (hit ? 'match-target' : '') + '"><span class="step-num">' + (i + 1) + '</span><span class="step-text">' + (hit ? highlight(step, q) : escapeHtml(step)) + '</span></li>';
+          return '<li class="' + (hit ? 'match-target' : '') + '"><span class="step-num">' + (i + 1) + '</span><span class="step-text">' + buildRich(step, q) + '</span></li>';
         }).join('') +
         '</ol>' +
       '</section>';
@@ -528,6 +542,24 @@
       m = r.toLowerCase().indexOf(ql, last);
     }
     out += escapeHtml(r.slice(last));
+    return out;
+  }
+
+  // نص غني آمن: [نص](رابط) + **نص غامق** — يُهرب كل ما عداه
+  function buildRich(raw, q) {
+    var r = String(raw == null ? '' : raw);
+    var re = /(\[([^\]]+)\]\(((?:https?:\/\/|mailto:|tel:)[^)\s]+)\))|\*\*((?:[^*\n]|\*(?!\*))+)\*\*/g;
+    var out = '', last = 0, m;
+    while ((m = re.exec(r))) {
+      out += highlight(r.slice(last, m.index), q);
+      if (m[1]) {
+        out += '<a class="detail-link" href="' + escapeHtml(m[3]) + '" target="_blank" rel="noopener noreferrer">' + highlight(m[2], q) + '</a>';
+      } else {
+        out += '<strong>' + highlight(m[4], q) + '</strong>';
+      }
+      last = m.index + m[0].length;
+    }
+    out += highlight(r.slice(last), q);
     return out;
   }
 

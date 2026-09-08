@@ -514,6 +514,12 @@ html[dir='rtl'] .cat-item { text-align: right; }
 }
 .detail-desc p.desc-head:first-child { margin-top: 0; }
 
+.detail-desc a.detail-link, .detail-table a.detail-link, .steps-list a.detail-link {
+  color: var(--mtn-blue, #00a0e9); text-decoration: underline;
+  text-underline-offset: 3px; word-break: break-word;
+}
+.detail-desc a.detail-link:hover, .detail-table a.detail-link:hover, .steps-list a.detail-link:hover { opacity: .8; }
+
 .detail-figure { margin: 14px 0 18px; text-align: center; }
 .detail-figure .detail-img {
   width: auto; max-width: 100%; height: 280px;

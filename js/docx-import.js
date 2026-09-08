@@ -39,6 +39,27 @@
       .trim();
   }
 
+  // دمج تشغيلات الغامق المتجاورة المتقاربة (Word يقسّم النص الغامق حول علامات التنصيص)
+  function mergeBold(s) {
+    var prev;
+    do {
+      prev = s;
+      s = s.replace(/\*\*([^*\n]+)\*\*\*\*([^*\n]+)\*\*/g, '**$1$2**');
+      s = s.replace(/\*\*\s*\*\*/g, '');
+    } while (s !== prev);
+    return balanceBoldStars(s);
+  }
+
+  // عند وجود عدد فردي من ** (تشغيلة غامقة غير مقفلة في Word) نحذف آخر ** لتجنّب عرض نجمتين فضوليتين
+  function balanceBoldStars(s) {
+    var stars = s.match(/\*\*/g) || [];
+    if (stars.length % 2 === 1) {
+      var last = s.lastIndexOf('**');
+      if (last >= 0) s = s.slice(0, last) + s.slice(last + 2);
+    }
+    return s;
+  }
+
   function textOf(p) {
     var s = '';
     var m;
@@ -48,6 +69,55 @@
       else s += m[0].indexOf('tab') >= 0 ? ' ' : '\n';
     }
     return clean(s);
+  }
+
+  // استخراج نص بسيط من عناصر w:t مع ترميز HTML ورموز الأحرف فقط (بدون trim)
+  function rawText(tok) {
+    var s = '';
+    var re = /<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>|<w:tab\/>|<w:br\/>/g;
+    var pm;
+    while ((pm = re.exec(tok))) {
+      if (pm[1] != null) s += pm[1];
+      else s += pm[0].indexOf('tab') >= 0 ? ' ' : '\n';
+    }
+    return s.replace(/&nbsp;/g, ' ')
+            .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'")
+            .replace(/[\uF0A0\uF0B1\uF07F\uF0C4\uF0C9]/g, '› ')
+            .replace(/[\uF0B7\uF0D8\uF06A\uF0A5\uF0A2]/g, '• ')
+            .replace(/[\uF000-\uF0FF]/g, ' ')
+            .replace(/\r?\n+/g, '\n')
+            .replace(/[ \t\u00A0]+/g, ' ');
+  }
+
+  // نص مع تحويل روابط Word الحقيقية إلى [نص](رابط) والتشغيلات الغامقة إلى **نص**
+  function textOfLinked(p, rels) {
+    var s = '';
+    var re = /<w:hyperlink\b[^>]*>[\s\S]*?<\/w:hyperlink>|<w:r\b[^>]*>[\s\S]*?<\/w:r>|<w:tab\/>|<w:br\/>/g;
+    var m;
+    while ((m = re.exec(p))) {
+      var tok = m[0];
+      if (tok.indexOf('<w:hyperlink') === 0) {
+        var ridM = /\br:id="(rId\d+)"/.exec(tok);
+        var rid = ridM ? ridM[1] : '';
+        var target = rels && rels[rid];
+        var txt = textOf(tok).trim();
+        if (target && txt) s += '[' + txt + '](' + target + ')';
+        else s += txt;
+      } else if (tok.indexOf('<w:r') === 0) {
+        var rt = rawText(tok);
+        if (/<w:rPr[\s\S]*?<w:b\b/.test(tok)) {
+          var trimmed = rt.trim();
+          if (trimmed) s += rt.match(/^\s*/)[0] + '**' + trimmed + '**';
+        } else {
+          s += rt;
+        }
+      } else if (tok === '<w:tab/>') {
+        s += ' ';
+      } else {
+        s += '\n';
+      }
+    }
+    return mergeBold(clean(s));
   }
 
   function isArabic(t) {
@@ -98,23 +168,61 @@
     return blocks;
   }
 
-  function parseTable(body) {
+  function parseTable(body, rels) {
     var rows = [];
+    var pending = {};
     var tr, tc;
     var reTr = /<w:tr\b[\s\S]*?<\/w:tr>/g;
     while ((tr = reTr.exec(body))) {
+      var touched = {};
       var cells = [];
       var reTc = /<w:tc\b[\s\S]*?<\/w:tc>/g;
+      var col = 0;
       while ((tc = reTc.exec(tr[0]))) {
+        var tcPr = /<w:tcPr\b[\s\S]*?<\/w:tcPr>/.exec(tc[0]);
+        var pr = tcPr ? tcPr[0] : '';
+        var gs = 1;
+        var gm = /<w:gridSpan\s+w:val="(\d+)"/.exec(pr);
+        if (gm) gs = parseInt(gm[1], 10) || 1;
+        var vm = /<w:vMerge\b([^>]*)\/>/.exec(pr);
+        var vmRestart = !!(vm && /w:val="\s*restart\s*"/.test(vm[1]));
+        var before = 0, afterL = 0;
+        var bm = /<w:gridBefore\s+w:val="(\d+)"/.exec(pr);
+        if (bm) before = parseInt(bm[1], 10) || 0;
+        var am = /<w:gridAfter\s+w:val="(\d+)"/.exec(pr);
+        if (am) afterL = parseInt(am[1], 10) || 0;
+        var spacer;
+        var sp;
+        for (sp = 0; sp < before; sp++) { cells.push({ t: '', lines: [] }); col++; }
+
         var lines = [];
         var reP = /<w:p\b[^>]*>([\s\S]*?)<\/w:p>/g;
         var pm;
         while ((pm = reP.exec(tc[0]))) {
-          var pt = textOf(pm[1]).replace(/[ \t\u00A0]+/g, ' ').trim();
+          var pt = textOfLinked(pm[1], rels).replace(/[ \t\u00A0]+/g, ' ').trim();
           if (pt && lines.indexOf(pt) < 0) lines.push(pt);
         }
-        cells.push({ t: lines.join(' '), lines: lines });
+
+        if (vm && !vmRestart) {
+          // استمرار دمج عمودي: يشغل الخلايا عمودياً بلا عنصر مستقل
+          if (pending[col]) pending[col].rs++;
+          touched[col] = 1;
+          cells.push({ t: '', rs: 0, cs: gs > 1 ? gs : undefined, lines: [] });
+          col += gs;
+          for (sp = 0; sp < afterL; sp++) { cells.push({ t: '', lines: [] }); col++; }
+          continue;
+        }
+
+        var cell = { t: lines.join(' '), lines: lines };
+        if (gs > 1) cell.cs = gs;
+        if (vmRestart) { cell.rs = 1; pending[col] = cell; }
+        touched[col] = 1;
+        cells.push(cell);
+        col += gs;
+        for (sp = 0; sp < afterL; sp++) { cells.push({ t: '', lines: [] }); col++; }
       }
+      var emptyPending = Object.keys(pending);
+      for (var i = 0; i < emptyPending.length; i++) if (!touched[emptyPending[i]]) delete pending[emptyPending[i]];
       if (cells.length) rows.push(cells);
     }
     return rows;
@@ -153,6 +261,24 @@
     return /[\u0600-\u06FF\u0041-\u005A\u0061-\u007A]/.test(txt);
   }
 
+  // ملخص أوضح: أول فقرة وصفية ليست عنواناً ولا نقطة ولا خطوة مرقمة
+  function makeSummary(desc, heads, meta, lang) {
+    var t = (meta && meta.title_ar) || '';
+    var titleRe = null;
+    if (t) titleRe = new RegExp('^' + escapeRegExp(String(t).trim()) + '[:؛]?$');
+    for (var i = 0; i < desc.length; i++) {
+      var p = (desc[i] || '').replace(/\*\*/g, '').replace(/[ \t\u00A0]+/g, ' ').trim();
+      if (!p || p.length < 20) continue;
+      if (heads.indexOf(i) >= 0) continue;
+      if (/^[•\u2013\u2014]\s/.test(p)) continue;
+      if (/^\s*\d+\s*[-.)–]\s/.test(p)) continue;
+      if (titleRe && titleRe.test(p)) continue;
+      return (p.length > 170 ? p.slice(0, 170) + '…' : p);
+    }
+    var fallback = (desc.filter(function (x) { return x && x.trim(); })[0] || '').replace(/\*\*/g, '').trim();
+    return (fallback.length > 170 ? fallback.slice(0, 170) + '…' : fallback);
+  }
+
   function extractService(zip, meta) {
     meta = meta || {};
     return Promise.all([
@@ -178,7 +304,7 @@
 
       blocks.forEach(function (blk) {
         if (blk.kind === 'tbl') {
-          var rows = parseTable(blk.body);
+          var rows = parseTable(blk.body, rels);
           if (!rows.length) return;
           // جدول بعمود واحد = قائمة تُعرض كفقرات
           var singleCol = rows.every(function (r) { return r.length === 1; });
@@ -189,21 +315,24 @@
             });
             return;
           }
-          tables.push({ after: Math.max(desc.length - 1, 0), rows: rows.map(function (r) { return r.map(function (c) { return c.t; }); }) });
+          tables.push({ after: Math.max(desc.length - 1, 0), rows: rows });
           return;
         }
-        var txt = textOf(blk.body);
+        var txt = textOfLinked(blk.body, rels);
         var ps = /<w:pStyle\s+w:val="([^"]+)"/.exec(blk.body);
         var isHeading = ps && /heading|Title|titre/i.test(ps[1]);
         var imgs = listImages(blk.body);
+        var isStep = !isHeading && inMethod && /^\s*\d+\s*[-.)–]/.test(txt);
 
         if (txt) {
-          desc.push(txt);
+          var disp = txt;
+          if (!isStep && !isHeading && /<w:numPr\b/.test(blk.body) && !/^[•؛:]/.test(disp)) disp = '• ' + disp;
+          desc.push(disp);
           if (isHeading || isHeadPara(blk.body, txt)) heads.push(desc.length - 1);
         }
         if (isHeading) {
           inMethod = METHOD_HEAD.test(txt);
-        } else if (/^\s*\d+\s*[-.)–]/.test(txt) && inMethod) {
+        } else if (isStep) {
           steps.push(cleanStep(txt));
         }
 
@@ -230,7 +359,7 @@
           var runs = []; var cur = [];
           blocks.forEach(function (blk) {
             if (blk.kind !== 'p') { if (cur.length) { runs.push(cur); cur = []; } return; }
-            var t = textOf(blk.body);
+            var t = textOfLinked(blk.body, rels);
             if (/^\s*\d+\s*[-.)–]/.test(t)) cur.push(cleanStep(t));
             else if (cur.length) { runs.push(cur); cur = []; }
           });
@@ -252,8 +381,7 @@
           while (desc.length && desc[0] && desc[0].trim() === title.trim()) desc.shift();
         }
         var lang = isArabic(desc.join('\n')) ? 'ar' : 'en';
-        var summary = desc[0] || '';
-        if (String(summary).length > 170) summary = summary.slice(0, 170) + '…';
+        var summary = makeSummary(desc, heads, { title_ar: title }, lang);
 
         return {
           file: meta.file || '',
