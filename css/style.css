@@ -533,6 +533,7 @@ html[dir='rtl'] .cat-item { text-align: right; }
 .detail-table { width: 100%; border-collapse: collapse; background: var(--surface); font-size: 13.5px; }
 .detail-table th, .detail-table td { border: 1px solid var(--border); padding: 8px 12px; text-align: right; vertical-align: top; }
 .detail-table thead th { background: var(--surface-2); font-weight: 800; white-space: nowrap; }
+.detail-table tbody tr:first-child th { background: var(--surface-2); font-weight: 800; white-space: nowrap; }
 .detail-table tbody tr:nth-child(even) { background: var(--surface-2); }
 
 .steps-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }

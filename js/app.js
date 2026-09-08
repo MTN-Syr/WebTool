@@ -328,8 +328,14 @@
         }, 0);
       }
       var cols = Math.max.apply(null, t.rows.map(rowCols));
-      var head = t.rows.slice(0, 1);
-      var body = t.rows.slice(1);
+      // إذا بدأ دمج عمودي (rowspan) في الصف الأول، يجب ألا يقسم الجدول إلى
+      // thead/tbody لأن المتصفح يقصّ rowspan عند حدود مجموعة الصفوف
+      var spansFewRows = (t.rows[0] || []).some(function (c) {
+        var cell = (c && typeof c === 'object') ? c : {};
+        return (cell.rs | 0) > 1;
+      });
+      var head = spansFewRows ? [] : t.rows.slice(0, 1);
+      var body = spansFewRows ? t.rows : t.rows.slice(1);
       function fillRow(row, tag) {
         var html = '<tr>';
         var used = 0;
@@ -350,7 +356,9 @@
         return html + '</tr>';
       }
       var thead = head.length ? '<thead>' + fillRow(head[0], 'th') + '</thead>' : '';
-      var tbody = body.length ? '<tbody>' + body.map(function (r) { return fillRow(r, 'td'); }).join('') + '</tbody>' : '';
+      var tbody = body.length ? '<tbody>' + body.map(function (r, i) {
+        return fillRow(r, (spansFewRows && i === 0) ? 'th' : 'td');
+      }).join('') + '</tbody>' : '';
       return '<div class="detail-table-wrap"><table class="detail-table">' + thead + tbody + '</table></div>';
     }
     var descHtml = paragraphs.map(function (p, i) {
