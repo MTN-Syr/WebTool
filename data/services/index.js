@@ -27,7 +27,12 @@ var SERVICE_FILES = [
   "خدمة-تحويل-الليرات-عن-طريق-المراكز.js",
   "مكالمة-متعددة-الأطراف.js",
   "سوبر-كليب-الخط-المسبق-الدفع.js",
-  "سوبر-كليب-الخط-اللاحق-الدفع-.js"
+  "سوبر-كليب-الخط-اللاحق-الدفع-.js",
+  "barring-of-outgoing-calls.js",
+  "dunning.js",
+  "due-date.js",
+  "bill-ceiling.js",
+  "suspend.js"
 ];
 
 var CATEGORIES = [

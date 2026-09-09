@@ -140,7 +140,7 @@
     });
 
     nav.innerHTML = html;
-
+    
     nav.querySelectorAll('[data-cat]').forEach(function (el) {
       el.addEventListener('click', function () {
         state.category = el.getAttribute('data-cat') || null;
@@ -392,13 +392,13 @@
 
     html += '</article>';
 
-    // Action bar
-    html += '<div class="action-bar">' +
-      '<button class="btn btn-outline" id="printBtn" onclick="window.print();">' +
-        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> ' +
-        t('printButton') +
-      '</button>' +
-    '</div>';
+    // // Action bar
+    // html += '<div class="action-bar">' +
+    //   '<button class="btn btn-outline" id="printBtn" onclick="window.print();">' +
+    //     '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> ' +
+    //     t('printButton') +
+    //   '</button>' +
+    // '</div>';
 
     // Related
     if (related.length) {
