@@ -32,7 +32,10 @@ var SERVICE_FILES = [
   "dunning.js",
   "due-date.js",
   "bill-ceiling.js",
-  "suspend.js"
+  "suspend.js",
+  "shabab-line.js",
+  "call-screening.js",
+  "seconds-line.js"
 ];
 
 var CATEGORIES = [
