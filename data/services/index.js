@@ -35,7 +35,13 @@ var SERVICE_FILES = [
   "suspend.js",
   "shabab-line.js",
   "call-screening.js",
-  "seconds-line.js"
+  "seconds-line.js",
+  "باقات-الطلاب-والقطاع-العام-والصحفيين.js",
+  "special-needs-bundles-باقات-ذوي-الهمم.js",
+  "deaf-and-dumbs.js",
+  "new-permanent-plans-for-prepaid-lines-الخطط-الجديدة-الدائمة-للخطوط-المسبقة-الدفع.js",
+  "new-permanent-plans-for-postpaid-lines-الخطط-الجديدة-الدائمة-للخطوط-اللاحقة-الدفع.js",
+  "new-data-bundles-social-hourly-for-prepaid-lines-segments.js"
 ];
 
 var CATEGORIES = [
