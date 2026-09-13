@@ -41,7 +41,12 @@ var SERVICE_FILES = [
   "deaf-and-dumbs.js",
   "new-permanent-plans-for-prepaid-lines-الخطط-الجديدة-الدائمة-للخطوط-المسبقة-الدفع.js",
   "new-permanent-plans-for-postpaid-lines-الخطط-الجديدة-الدائمة-للخطوط-اللاحقة-الدفع.js",
-  "new-data-bundles-social-hourly-for-prepaid-lines-segments.js"
+  "new-data-bundles-social-hourly-for-prepaid-lines-segments.js",
+  "الفاتورة-التفصيلية-الدائمة-أو-المؤقتة.js",
+  "كشف-الفاتورة.js",
+  "تأمين-مكالمات.js",
+  "تقسيط-الفواتير.js",
+  "الاستعلام-عن-الفواتير.js"
 ];
 
 var CATEGORIES = [
