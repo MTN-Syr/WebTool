@@ -46,7 +46,10 @@ var SERVICE_FILES = [
   "كشف-الفاتورة.js",
   "تأمين-مكالمات.js",
   "تقسيط-الفواتير.js",
-  "الاستعلام-عن-الفواتير.js"
+  "الاستعلام-عن-الفواتير.js",
+  "international-accesspreالصفر-الدوليللمسبق-الدفع.js",
+  "international-roaming-pre-تجوال-دولي-مسبق.js",
+  "data-roaming-تجوال-الانترنت-للمسبق.js",
 ];
 
 var CATEGORIES = [
@@ -91,6 +94,13 @@ var CATEGORIES = [
     "icon": "📞",
     "title_ar": "خدمات مخصصة",
     "title_en": "S-Services"
+  }
+  ,
+  {
+    "id": "Rooming",
+    "icon": "🌐",
+    "title_ar": "التجوال",
+    "title_en": "Rooming"
   }
 ];
 
