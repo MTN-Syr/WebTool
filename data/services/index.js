@@ -50,6 +50,12 @@ var SERVICE_FILES = [
   "international-accesspreالصفر-الدوليللمسبق-الدفع.js",
   "international-roaming-pre-تجوال-دولي-مسبق.js",
   "data-roaming-تجوال-الانترنت-للمسبق.js",
+  "zone-roaming-التجوال-الإقليمي.js",
+  "international-roaming.js",
+  "international-accessالصفر-الدوليللاحق-الدفع.js",
+  "national-roamingالتجوال-المحلي.js",
+  "sms-roaming-تجوال-الرسائل.js",
+  "gprs-roamingتجوال-الإنترنت.js",
 ];
 
 var CATEGORIES = [
