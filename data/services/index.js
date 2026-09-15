@@ -56,6 +56,11 @@ var SERVICE_FILES = [
   "national-roamingالتجوال-المحلي.js",
   "sms-roaming-تجوال-الرسائل.js",
   "gprs-roamingتجوال-الإنترنت.js",
+  "حاكيني.js",
+  "تحويل الليرات.js",
+  "New Gifting bundles for prepaid.js",
+  "Tekram.js",
+  "RBT.js",
 ];
 
 var CATEGORIES = [
