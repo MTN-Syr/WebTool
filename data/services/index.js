@@ -70,6 +70,11 @@ var SERVICE_FILES = [
   "تغيير-الرقم.js",
   "التنازل-عن-خط-لاحق-الدفع.js",
   "الإيقاف-المؤقت-للخط.js",
+  "المجموعات-المغلقة-المطورة.js",
+  "cash-mobile-service.js",
+  "fleet-management.js",
+  "hybrid-billing.js",
+  "adsl.js",
 ];
 
 var CATEGORIES = [
