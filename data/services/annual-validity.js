@@ -5,7 +5,7 @@
   "file": "Annual Validity.docx",
   "lang": "ar",
   "id": "annual-validity",
-  "category": "c-validity",
+  "category": "Services",
   "icon": "🗓️",
   "title_ar": "الصلاحية السنوية",
   "title_en": "Annual Validity",
