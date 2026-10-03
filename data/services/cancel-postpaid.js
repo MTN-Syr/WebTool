@@ -5,7 +5,7 @@
   "file": "إلغاء الاشتراك بالخط اللاحق الدفع.docx",
   "lang": "ar",
   "id": "cancel-postpaid",
-  "category": "c-cancel",
+  "category": "Postpaid",
   "icon": "📤",
   "title_ar": "إلغاء الاشتراك بالخط اللاحق الدفع",
   "title_en": "Cancel Postpaid Subscription",
