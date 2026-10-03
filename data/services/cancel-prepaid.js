@@ -5,7 +5,7 @@
   "file": "إلغاء الاشتراك بالخط المسبق الدفع.docx",
   "lang": "ar",
   "id": "cancel-prepaid",
-  "category": "c-cancel",
+  "category": "Prepaid",
   "icon": "📴",
   "title_ar": "إلغاء الاشتراك بالخط المسبق الدفع",
   "title_en": "Cancel Prepaid Subscription",
