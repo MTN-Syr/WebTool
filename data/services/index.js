@@ -81,44 +81,44 @@ var CATEGORIES = [
   {
     "id": "c-lines",
     "icon": "📱",
-    "title_ar": "الخطوط والاشتراك",
-    "title_en": "Lines & Subscriptions"
+    "title_ar": "Prepaid",
+    "title_en": "Prepaid"
   },
     {
     "id": "c-cancel",
-    "icon": "🗑️",
-    "title_ar": "إلغاء الاشتراك",
-    "title_en": "Cancellation"
+    "icon": "📱",
+    "title_ar": "Postpaid",
+    "title_en": "postpaid"
   },
   {
     "id": "c-validity",
     "icon": "⏳",
-    "title_ar": "صلاحية الخط",
-    "title_en": "Line Validity"
+    "title_ar": "خدمات ترفيهية",
+    "title_en": "Entertement"
   },
   {
     "id": "c-number",
     "icon": "🔢",
-    "title_ar": "الأرقام",
-    "title_en": "Numbers"
+    "title_ar": "الباقات",
+    "title_en": "Bundles"
   },
   {
     "id": "c-security",
     "icon": "🔐",
-    "title_ar": "الحماية والأمان",
-    "title_en": "Security"
+    "title_ar": "الدفع الالكتروني",
+    "title_en": "Cash Mobile"
   },
   {
     "id": "c-promo",
     "icon": "🎁",
-    "title_ar": "العروض",
-    "title_en": "Offers"
+    "title_ar": "Adsl",
+    "title_en": "Adsl"
   },
   {
     "id": "S-Services",
     "icon": "📞",
-    "title_ar": "خدمات مخصصة",
-    "title_en": "S-Services"
+    "title_ar": "الخدمات",
+    "title_en": "Services"
   }
   ,
   {
