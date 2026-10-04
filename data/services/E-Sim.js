@@ -5,7 +5,7 @@
   "file": "eSIM.docx",
   "lang": "ar",
   "id": "E-sim",
-  "category": "c-lines",
+  "category": "Prepaid","Postpaid"
   "icon": "📱",
   "title_ar": "E SIM",
   "title_en": "",
