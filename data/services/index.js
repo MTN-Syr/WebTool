@@ -79,52 +79,52 @@ var SERVICE_FILES = [
 
 var CATEGORIES = [
   {
-    "id": "c-lines",
+    "id": "Prepaid",
     "icon": "📱",
     "title_ar": "Prepaid",
     "title_en": "Prepaid"
   },
     {
-    "id": "c-cancel",
+    "id": "Postpaid",
     "icon": "📱",
     "title_ar": "Postpaid",
     "title_en": "postpaid"
   },
   {
-    "id": "c-validity",
+    "id": "Entertement",
     "icon": "⏳",
-    "title_ar": "خدمات ترفيهية",
+    "title_ar": "Entertement",
     "title_en": "Entertement"
   },
   {
-    "id": "c-number",
+    "id": "Bundles",
     "icon": "🔢",
-    "title_ar": "الباقات",
+    "title_ar": "Bundles",
     "title_en": "Bundles"
   },
   {
-    "id": "c-security",
+    "id": "Cash Mobile",
     "icon": "🔐",
-    "title_ar": "الدفع الالكتروني",
+    "title_ar": "Cash Mobile",
     "title_en": "Cash Mobile"
   },
   {
-    "id": "c-promo",
+    "id": "Adsl",
     "icon": "🎁",
     "title_ar": "Adsl",
     "title_en": "Adsl"
   },
   {
-    "id": "S-Services",
+    "id": "Services",
     "icon": "📞",
-    "title_ar": "الخدمات",
+    "title_ar": "Services",
     "title_en": "Services"
   }
   ,
   {
     "id": "Rooming",
     "icon": "🌐",
-    "title_ar": "التجوال",
+    "title_ar": "Rooming",
     "title_en": "Rooming"
   }
 ];
